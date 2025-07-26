@@ -1,15 +1,11 @@
 # Sistema de Gestão de Serviços
 
-Sistema web completo para gestão de serviços desenvolvido em PHP 8+ puro (sem frameworks), utilizando PDO, MySQL e Bootstrap 5.
+Sistema web completo para gestão de serviços desenvolvido em PHP 8+ puro, utilizando PDO, MySQL e Bootstrap 5.
 
 ## 🚀 Instalação Rápida
 
 ### 1. **Banco de Dados** (Uma única etapa!)
-Execute o arquivo `BD_Tema.sql` no MySQL:
-```bash
-mysql -u root < BD_Tema.sql
-```
-ou via phpMyAdmin: importe o arquivo `BD_Tema.sql`
+Via phpMyAdmin: importe o arquivo `BD_Tema.sql`
 
 **✅ Pronto!** O arquivo `BD_Tema.sql` já contém:
 - Criação do banco `trabalho_web`
@@ -251,7 +247,6 @@ O sistema já vem configurado com:
 
 ## 🏆 Destaques Técnicos
 
-- ✨ **Instalação em 1 comando**: `mysql -u root < BD_Tema.sql`
 - 🔒 **100% seguro**: Prepared statements, CSRF, hash de senhas
 - 🎯 **Arquitetura limpa**: DAO pattern, separation of concerns
 - 📱 **Totalmente responsivo**: Bootstrap 5 mobile-first
