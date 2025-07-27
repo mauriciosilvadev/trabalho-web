@@ -1,5 +1,7 @@
 -- Database setup for Service Management System
 -- Run this single file to create database, tables and sample data
+-- UPDATED: Compatible with dual architecture (admin + public)
+-- UPDATED: Support for flexible contratacao fields
 
 DROP DATABASE IF EXISTS `trabalho_web`;
 
@@ -34,6 +36,9 @@ CREATE TABLE `clientes` (
     `email` varchar(100) NOT NULL,
     `telefone` varchar(20) DEFAULT NULL,
     `endereco` varchar(200) DEFAULT NULL,
+    `senha` varchar(255) DEFAULT NULL COMMENT 'Senha opcional para checkout express',
+    `remember_token` varchar(255) DEFAULT NULL,
+    `ativo` tinyint(1) DEFAULT 1,
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
@@ -48,6 +53,7 @@ CREATE TABLE `servicos` (
     `tipo` varchar(50) NOT NULL,
     `preco` decimal(10, 2) NOT NULL,
     `descricao` text DEFAULT NULL,
+    `ativo` tinyint(1) DEFAULT 1 COMMENT 'Status do serviço',
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
@@ -70,13 +76,16 @@ CREATE TABLE `datas_disponiveis` (
 CREATE TABLE `contratacoes` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `cliente_id` int(11) NOT NULL,
-    `usuario_id` int(11) NOT NULL,
-    `valor_total` decimal(10, 2) NOT NULL,
+    `usuario_id` int(11) DEFAULT NULL COMMENT 'Usuário que processou (opcional)',
+    `total` decimal(10, 2) DEFAULT NULL COMMENT 'Total simplificado',
+    `valor_total` decimal(10, 2) NOT NULL COMMENT 'Valor total da contratação',
     `status` enum(
+        'pendente',
+        'confirmada',
         'ativo',
         'cancelado',
         'concluido'
-    ) DEFAULT 'ativo',
+    ) DEFAULT 'pendente',
     `observacoes` text DEFAULT NULL,
     `criado_em` timestamp DEFAULT CURRENT_TIMESTAMP,
     `atualizado_em` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -90,17 +99,26 @@ CREATE TABLE `contratacoes` (
 -- Table: contratacao_servicos
 CREATE TABLE `contratacao_servicos` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `contrato_id` int(11) NOT NULL,
+    `contrato_id` int(11) NOT NULL COMMENT 'Referência para admin',
+    `contratacao_id` int(11) DEFAULT NULL COMMENT 'Referência para público',
     `servico_id` int(11) NOT NULL,
+    `data_id` int(11) DEFAULT NULL COMMENT 'Referência para datas_disponiveis',
+    `data_disponivel_id` int(11) DEFAULT NULL COMMENT 'Alias para data_id',
     `quantidade` int(11) NOT NULL DEFAULT 1,
-    `preco_unitario` decimal(10, 2) NOT NULL,
-    `subtotal` decimal(10, 2) NOT NULL,
+    `preco_unitario` decimal(10, 2) DEFAULT NULL,
+    `preco` decimal(10, 2) DEFAULT NULL COMMENT 'Preço simplificado',
+    `valor` decimal(10, 2) DEFAULT NULL COMMENT 'Valor do serviço',
+    `subtotal` decimal(10, 2) DEFAULT NULL COMMENT 'Subtotal calculado',
     `criado_em` timestamp DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `contrato_id` (`contrato_id`),
+    KEY `contratacao_id` (`contratacao_id`),
     KEY `servico_id` (`servico_id`),
+    KEY `data_id` (`data_id`),
     CONSTRAINT `fk_contrato_servico_contrato` FOREIGN KEY (`contrato_id`) REFERENCES `contratacoes` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_contrato_servico_servico` FOREIGN KEY (`servico_id`) REFERENCES `servicos` (`id`)
+    CONSTRAINT `fk_contrato_servico_contratacao` FOREIGN KEY (`contratacao_id`) REFERENCES `contratacoes` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_contrato_servico_servico` FOREIGN KEY (`servico_id`) REFERENCES `servicos` (`id`),
+    CONSTRAINT `fk_contrato_servico_data` FOREIGN KEY (`data_id`) REFERENCES `datas_disponiveis` (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- Table: agendamentos
@@ -326,6 +344,10 @@ VALUES
 
 -- Installation success message
 SELECT 'SUCCESS: Database created with sample data!' as status;
+
+SELECT 'ARCHITECTURE: Dual system - Public (/) + Admin (/admin/)' as architecture;
+
+SELECT 'UPDATED: Compatible with cart system and flexible fields' as compatibility;
 
 SELECT 'LOGIN: admin / admin123' as admin_credentials;
 

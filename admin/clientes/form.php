@@ -142,7 +142,7 @@ function isValidCPF($cpf)
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="../public/dashboard.php">
+            <a class="navbar-brand" href="../dashboard.php">
                 <i class="bi bi-gear-fill"></i> Sistema de Gestão de Serviços
             </a>
 
@@ -153,7 +153,7 @@ function isValidCPF($cpf)
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="../public/dashboard.php">
+                        <a class="nav-link" href="../dashboard.php">
                             <i class="bi bi-house"></i> Dashboard
                         </a>
                     </li>
@@ -185,7 +185,7 @@ function isValidCPF($cpf)
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($user['nome']) ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../public/logout.php">
+                            <li><a class="dropdown-item" href="logout.php">
                                     <i class="bi bi-box-arrow-right"></i> Sair
                                 </a></li>
                         </ul>

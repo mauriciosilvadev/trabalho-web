@@ -1,55 +1,145 @@
 /**
- * Cart management functionality
+ * Sistema de Carrinho de Compras
+ * Gerencia carrinho usando sessões PHP + LocalStorage
  */
 
-// Cart state
+// Variables globais
 let cart = {
     items: [],
     total: 0
 };
 
-// Initialize cart on page load
 $(document).ready(function() {
+    // Initialize cart
     loadCart();
     updateCartDisplay();
     
-    // Bind events
+    // Event handlers
     $(document).on('click', '.add-to-cart', handleAddToCart);
     $(document).on('click', '.remove-from-cart', handleRemoveFromCart);
     $(document).on('click', '.select-date', handleSelectDate);
     $(document).on('click', '#clearCart', clearCart);
     $(document).on('click', '#proceedToCheckout', proceedToCheckout);
+    
+    // Show cart page items if on cart page
+    if (window.location.pathname.includes('carrinho.php')) {
+        displayCartItems();
+    }
 });
 
 /**
- * Load cart from sessionStorage
+ * Load cart from localStorage and sync with session
  */
 function loadCart() {
-    const savedCart = sessionStorage.getItem('serviceCart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
+    try {
+        const storedCart = localStorage.getItem('service_cart');
+        if (storedCart) {
+            cart = JSON.parse(storedCart);
+        }
+        
+        // Sync with PHP session if needed
+        syncCartWithSession();
+    } catch (e) {
+        console.error('Error loading cart:', e);
+        cart = { items: [], total: 0 };
     }
 }
 
 /**
- * Save cart to sessionStorage
+ * Save cart to localStorage and PHP session
  */
 function saveCart() {
-    sessionStorage.setItem('serviceCart', JSON.stringify(cart));
-    updateCartDisplay();
+    try {
+        localStorage.setItem('service_cart', JSON.stringify(cart));
+        updateCartDisplay();
+        
+        // Sync with PHP session
+        syncCartWithSession();
+    } catch (e) {
+        console.error('Error saving cart:', e);
+    }
 }
 
 /**
- * Add service to cart
+ * Sync cart with PHP session
+ */
+function syncCartWithSession() {
+    // Determinar o caminho correto baseado na URL atual
+    const currentPath = window.location.pathname;
+    let syncUrl;
+    
+    if (currentPath.includes('/admin/')) {
+        // Estamos na área admin
+        syncUrl = 'sync_cart.php';
+    } else {
+        // Estamos na área pública
+        syncUrl = 'sync_cart.php';
+    }
+    
+    $.ajax({
+        url: syncUrl,
+        method: 'POST',
+        data: { cart: JSON.stringify(cart) },
+        dataType: 'json',
+        success: function(response) {
+            if (!response.success) {
+                console.error('Cart sync failed:', response.message);
+            }
+        },
+        error: function() {
+            console.error('Cart sync request failed');
+        }
+    });
+}
+
+/**
+ * Add service to cart (global function)
+ */
+function addToCart(service) {
+    // Check cart limit
+    if (cart.items.length >= 5) {
+        showError('Carrinho pode ter no máximo 5 serviços');
+        return;
+    }
+    
+    // Check if already in cart
+    const existingItem = cart.items.find(item => item.serviceId === parseInt(service.id));
+    if (existingItem) {
+        showError('Serviço já está no carrinho');
+        return;
+    }
+    
+    // Add to cart
+    const newItem = {
+        serviceId: parseInt(service.id),
+        serviceName: service.nome,
+        serviceType: service.tipo,
+        price: parseFloat(service.preco),
+        quantity: 1,
+        selectedDate: null,
+        selectedDateId: null,
+        datas: []
+    };
+    
+    cart.items.push(newItem);
+    saveCart();
+    syncCartWithSession();
+    updateCartDisplay();
+    updateCartCount();
+    
+    showSuccess(`${service.nome} adicionado ao carrinho!`);
+}
+
+/**
+ * Handle adding service to cart
  */
 function handleAddToCart(e) {
     e.preventDefault();
     
-    const button = $(this);
-    const serviceId = button.data('service-id');
-    const serviceName = button.data('service-name');
-    const serviceType = button.data('service-type');
-    const servicePrice = parseFloat(button.data('service-price'));
+    const serviceId = parseInt($(this).data('service-id'));
+    const serviceName = $(this).data('service-name');
+    const serviceType = $(this).data('service-type');
+    const servicePrice = parseFloat($(this).data('service-price'));
     
     // Check cart limit
     if (cart.items.length >= 5) {
@@ -70,18 +160,21 @@ function handleAddToCart(e) {
         serviceName: serviceName,
         serviceType: serviceType,
         price: servicePrice,
+        quantity: 1,
         selectedDate: null,
-        selectedDateId: null
+        selectedDateId: null,
+        datas: []
     };
     
     cart.items.push(newItem);
     cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
     
     saveCart();
-    showSuccess('Serviço adicionado ao carrinho');
     
-    // Disable button
-    button.prop('disabled', true).text('No Carrinho');
+    // Update button state
+    $(this).prop('disabled', true).text('Adicionado ao Carrinho');
+    
+    showSuccess('Serviço adicionado ao carrinho!');
     
     // Show date selection modal
     showDateSelectionModal(serviceId, serviceName);
@@ -144,9 +237,21 @@ function handleSelectDate(e) {
  * Show date selection modal
  */
 function showDateSelectionModal(serviceId, serviceName) {
+    // Determinar o caminho correto baseado na URL atual
+    const currentPath = window.location.pathname;
+    let getDateUrl;
+    
+    if (currentPath.includes('/admin/')) {
+        // Estamos na área admin
+        getDateUrl = 'get_dates.php';
+    } else {
+        // Estamos na área pública
+        getDateUrl = 'get_dates.php';
+    }
+    
     // Load available dates via AJAX
     $.ajax({
-        url: 'get_dates.php',
+        url: getDateUrl,
         type: 'GET',
         data: { service_id: serviceId },
         dataType: 'json',
@@ -223,23 +328,28 @@ function displayDateModal(serviceId, serviceName, dates) {
  * Update cart display
  */
 function updateCartDisplay() {
-    // Update cart badge
-    $('.cart-badge').text(cart.items.length);
+    const cartCount = cart.items.length;
+    const cartTotal = cart.total;
     
-    // Update cart button visibility
-    if (cart.items.length > 0) {
+    // Update cart badge
+    $('.cart-badge').text(cartCount);
+    
+    // Update cart total
+    $('.cart-total').text(formatCurrency(cartTotal));
+    
+    // Show/hide cart button
+    if (cartCount > 0) {
         $('.cart-button').show();
     } else {
         $('.cart-button').hide();
     }
     
-    // Update cart total
-    $('.cart-total').text(formatCurrency(cart.total));
-    
-    // Update cart items if on cart page
-    if ($('#cart-items').length > 0) {
-        displayCartItems();
-    }
+    // Update buttons on search page
+    cart.items.forEach(item => {
+        $(`.add-to-cart[data-service-id="${item.serviceId}"]`)
+            .prop('disabled', true)
+            .text('No Carrinho');
+    });
 }
 
 /**
@@ -247,41 +357,47 @@ function updateCartDisplay() {
  */
 function displayCartItems() {
     const container = $('#cart-items');
-    container.empty();
     
     if (cart.items.length === 0) {
         showEmptyCart();
         return;
     }
     
+    container.empty();
+    
     cart.items.forEach(item => {
         const itemHtml = `
-            <div class="cart-item" id="cart-item-${item.serviceId}">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <h5>${escapeHtml(item.serviceName)}</h5>
-                        <small class="text-muted">${escapeHtml(item.serviceType)}</small>
-                    </div>
-                    <div class="col-md-3">
-                        <strong>${formatCurrency(item.price)}</strong>
-                    </div>
-                    <div class="col-md-2">
-                        ${item.selectedDate ? 
-                            `<small class="text-success">
-                                <i class="bi bi-calendar-check"></i> 
-                                ${formatDate(item.selectedDate)}
-                            </small>` : 
-                            `<small class="text-warning">
-                                <i class="bi bi-exclamation-triangle"></i> 
-                                Data não selecionada
-                            </small>`
-                        }
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-from-cart" 
-                                data-service-id="${item.serviceId}">
-                            <i class="bi bi-trash"></i>
-                        </button>
+            <div class="card mb-3" id="cart-item-${item.serviceId}">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-1">${escapeHtml(item.serviceName)}</h5>
+                            <small class="text-muted">${escapeHtml(item.serviceType)}</small>
+                        </div>
+                        <div class="col-md-2">
+                            <strong>R$ ${formatCurrency(item.price)}</strong>
+                        </div>
+                        <div class="col-md-3">
+                            ${item.selectedDate ? 
+                                `<small class="text-success">
+                                    <i class="bi bi-calendar-check"></i> 
+                                    ${formatDate(item.selectedDate)}
+                                </small>` : 
+                                `<button type="button" class="btn btn-sm btn-outline-primary" 
+                                         onclick="showDateSelectionModal(${item.serviceId}, '${escapeHtml(item.serviceName)}')">
+                                    <i class="bi bi-calendar"></i> Selecionar Data
+                                </button>
+                                <small class="text-warning d-block">
+                                    Data não selecionada
+                                </small>`
+                            }
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-from-cart" 
+                                    data-service-id="${item.serviceId}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -306,34 +422,35 @@ function displayCartItems() {
 function showEmptyCart() {
     $('#cart-items').html(`
         <div class="text-center py-5">
-            <i class="bi bi-cart" style="font-size: 4rem; color: #ccc;"></i>
-            <h4 class="mt-3">Carrinho Vazio</h4>
-            <p class="text-muted">Adicione alguns serviços ao seu carrinho</p>
+            <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">Carrinho vazio</h4>
+            <p class="text-muted">Adicione alguns serviços para continuar</p>
             <a href="buscar.php" class="btn btn-primary">
                 <i class="bi bi-search"></i> Buscar Serviços
             </a>
         </div>
     `);
     
-    $('#cart-summary').hide();
+    $('#proceedToCheckout').prop('disabled', true);
+    $('#checkout-warning').hide();
 }
 
 /**
  * Clear entire cart
  */
 function clearCart() {
-    if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+    if (confirm('Deseja realmente limpar todo o carrinho?')) {
         cart = { items: [], total: 0 };
         saveCart();
         
         // Re-enable all add to cart buttons
         $('.add-to-cart').prop('disabled', false).text('Adicionar ao Carrinho');
         
-        showSuccess('Carrinho limpo com sucesso');
-        
-        if ($('#cart-items').length > 0) {
+        if (window.location.pathname.includes('carrinho.php')) {
             showEmptyCart();
         }
+        
+        showSuccess('Carrinho limpo com sucesso');
     }
 }
 
@@ -341,7 +458,6 @@ function clearCart() {
  * Proceed to checkout
  */
 function proceedToCheckout() {
-    // Validate cart
     if (cart.items.length === 0) {
         showError('Carrinho está vazio');
         return;
@@ -353,43 +469,49 @@ function proceedToCheckout() {
         return;
     }
     
-    // Redirect to checkout
-    window.location.href = 'resumo.php';
+    // Save cart and redirect to public checkout
+    saveCart();
+    
+    // Verificar se estamos na página pública ou admin
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/public/')) {
+        window.location.href = 'checkout.php';
+    } else {
+        window.location.href = '../public/checkout.php';
+    }
 }
 
 /**
  * Format date for display
  */
 function formatDate(dateString) {
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString('pt-BR', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    try {
+        const date = new Date(dateString + 'T00:00:00');
+        return date.toLocaleDateString('pt-BR');
+    } catch (e) {
+        return dateString;
+    }
 }
 
 /**
  * Format currency for display
  */
 function formatCurrency(value) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value);
+    try {
+        return parseFloat(value).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    } catch (e) {
+        return '0,00';
+    }
 }
 
 /**
  * Escape HTML to prevent XSS
  */
 function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }

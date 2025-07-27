@@ -1,6 +1,18 @@
 # Regras internas do Copilot Agent - NÃO COMMITAR
 copilot-rules/
 
+# Arquivos de teste - EXCLUSÃO AUTOMÁTICA
+teste_*.html
+teste_*.php
+test_*.html
+test_*.php
+*_test.html
+*_test.php
+debug_*.html
+debug_*.php
+temp_*.html
+temp_*.php
+
 # Configurações locais de desenvolvimento
 config/local.php
 config/database.local.php
