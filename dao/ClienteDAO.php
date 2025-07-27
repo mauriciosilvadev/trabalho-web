@@ -100,14 +100,34 @@ class ClienteDAO
     }
 
     /**
+     * Find client by email
+     */
+    public function findByEmail(string $email): ?array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT id, nome, cpf, cidade, email, telefone, endereco, senha, created_at 
+                FROM clientes 
+                WHERE email = ? AND ativo = 1
+            ");
+            $stmt->execute([$email]);
+            $client = $stmt->fetch();
+            return $client ?: null;
+        } catch (PDOException $e) {
+            error_log("Error finding client by email: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Create new client
      */
     public function create(array $data): ?int
     {
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO clientes (nome, cpf, cidade, email, telefone, endereco) 
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO clientes (nome, cpf, cidade, email, telefone, endereco, senha) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
 
             $result = $stmt->execute([
@@ -116,7 +136,8 @@ class ClienteDAO
                 $data['cidade'],
                 $data['email'],
                 $data['telefone'] ?? null,
-                $data['endereco'] ?? null
+                $data['endereco'] ?? null,
+                $data['senha'] ?? null
             ]);
 
             return $result ? $this->db->lastInsertId() : null;

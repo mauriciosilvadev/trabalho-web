@@ -1,5 +1,7 @@
 -- Database setup for Service Management System
 -- Run this single file to create database, tables and sample data
+-- UPDATED: Compatible with dual architecture (admin + public)
+-- UPDATED: Support for flexible contratacao fields
 
 DROP DATABASE IF EXISTS `trabalho_web`;
 
@@ -34,6 +36,9 @@ CREATE TABLE `clientes` (
     `email` varchar(100) NOT NULL,
     `telefone` varchar(20) DEFAULT NULL,
     `endereco` varchar(200) DEFAULT NULL,
+    `senha` varchar(255) DEFAULT NULL COMMENT 'Senha opcional para checkout express',
+    `remember_token` varchar(255) DEFAULT NULL,
+    `ativo` tinyint(1) DEFAULT 1,
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
@@ -48,6 +53,7 @@ CREATE TABLE `servicos` (
     `tipo` varchar(50) NOT NULL,
     `preco` decimal(10, 2) NOT NULL,
     `descricao` text DEFAULT NULL,
+    `ativo` tinyint(1) DEFAULT 1 COMMENT 'Status do serviço',
     `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
@@ -70,13 +76,16 @@ CREATE TABLE `datas_disponiveis` (
 CREATE TABLE `contratacoes` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `cliente_id` int(11) NOT NULL,
-    `usuario_id` int(11) NOT NULL,
-    `valor_total` decimal(10, 2) NOT NULL,
+    `usuario_id` int(11) DEFAULT NULL COMMENT 'Usuário que processou (opcional)',
+    `total` decimal(10, 2) DEFAULT NULL COMMENT 'Total simplificado',
+    `valor_total` decimal(10, 2) NOT NULL COMMENT 'Valor total da contratação',
     `status` enum(
+        'pendente',
+        'confirmada',
         'ativo',
         'cancelado',
         'concluido'
-    ) DEFAULT 'ativo',
+    ) DEFAULT 'pendente',
     `observacoes` text DEFAULT NULL,
     `criado_em` timestamp DEFAULT CURRENT_TIMESTAMP,
     `atualizado_em` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -90,17 +99,26 @@ CREATE TABLE `contratacoes` (
 -- Table: contratacao_servicos
 CREATE TABLE `contratacao_servicos` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `contrato_id` int(11) NOT NULL,
+    `contrato_id` int(11) NOT NULL COMMENT 'Referência para admin',
+    `contratacao_id` int(11) DEFAULT NULL COMMENT 'Referência para público',
     `servico_id` int(11) NOT NULL,
+    `data_id` int(11) DEFAULT NULL COMMENT 'Referência para datas_disponiveis',
+    `data_disponivel_id` int(11) DEFAULT NULL COMMENT 'Alias para data_id',
     `quantidade` int(11) NOT NULL DEFAULT 1,
-    `preco_unitario` decimal(10, 2) NOT NULL,
-    `subtotal` decimal(10, 2) NOT NULL,
+    `preco_unitario` decimal(10, 2) DEFAULT NULL,
+    `preco` decimal(10, 2) DEFAULT NULL COMMENT 'Preço simplificado',
+    `valor` decimal(10, 2) DEFAULT NULL COMMENT 'Valor do serviço',
+    `subtotal` decimal(10, 2) DEFAULT NULL COMMENT 'Subtotal calculado',
     `criado_em` timestamp DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     KEY `contrato_id` (`contrato_id`),
+    KEY `contratacao_id` (`contratacao_id`),
     KEY `servico_id` (`servico_id`),
+    KEY `data_id` (`data_id`),
     CONSTRAINT `fk_contrato_servico_contrato` FOREIGN KEY (`contrato_id`) REFERENCES `contratacoes` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_contrato_servico_servico` FOREIGN KEY (`servico_id`) REFERENCES `servicos` (`id`)
+    CONSTRAINT `fk_contrato_servico_contratacao` FOREIGN KEY (`contratacao_id`) REFERENCES `contratacoes` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_contrato_servico_servico` FOREIGN KEY (`servico_id`) REFERENCES `servicos` (`id`),
+    CONSTRAINT `fk_contrato_servico_data` FOREIGN KEY (`data_id`) REFERENCES `datas_disponiveis` (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- Table: agendamentos
@@ -126,7 +144,7 @@ CREATE TABLE `agendamentos` (
 -- SAMPLE DATA
 -- ========================================
 
--- Users (admin/admin123, operador1/user123, operador2/user123)
+-- Users (admin/admin123, operador/user123, teste_admin/teste123, teste_cliente/teste123)
 INSERT INTO
     `usuarios` (
         `login`,
@@ -138,30 +156,30 @@ INSERT INTO
     )
 VALUES (
         'admin',
-        '$2y$10$80XiANuz/lUmdz2BvAL78u3sPV08uPXk4qJcCsNBlIEsqGkzJJ/Lu',
-        'Administrador',
+        '$2y$10$vAftfLdFDbA0qZsc6wyJUu1QqKq86vlCvBWEkianPQXYA5vrObXSi',
+        'Administrador do Sistema',
         'admin@lojaweb.com',
         'admin',
         1
     ),
     (
-        'operador1',
-        '$2y$10$jX4tAoRRYbr4/b2U6Y33Ee0X5CGcvL0GZF8a/tU2rCAgb3FEumiHK',
-        'Operador Um',
-        'operador1@lojaweb.com',
+        'operador',
+        '$2y$10$rNz8NqiYJ.JK/d97lKdGhecm8pbwhwnYnKVxZ.mtoj7FOfZmfFTyi',
+        'João Silva - Operador',
+        'operador@lojaweb.com',
         'operador',
         1
     ),
     (
-        'operador2',
-        '$2y$10$jX4tAoRRYbr4/b2U6Y33Ee0X5CGcvL0GZF8a/tU2rCAgb3FEumiHK',
-        'Operador Dois',
-        'operador2@lojaweb.com',
-        'operador',
+        'teste_admin',
+        '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre',
+        'Admin de Teste',
+        'admin.teste@empresa.com',
+        'admin',
         1
     );
 
--- Sample clients
+-- Sample clients (only essential ones with some having passwords for testing)
 INSERT INTO
     `clientes` (
         `nome`,
@@ -169,7 +187,8 @@ INSERT INTO
         `cidade`,
         `email`,
         `telefone`,
-        `endereco`
+        `endereco`,
+        `senha`
     )
 VALUES (
         'João Silva Santos',
@@ -177,7 +196,8 @@ VALUES (
         'Vitória',
         'joao.silva@email.com',
         '(27) 99999-1111',
-        'Rua das Flores, 123'
+        'Rua das Flores, 123',
+        NULL
     ),
     (
         'Maria Oliveira Costa',
@@ -185,15 +205,8 @@ VALUES (
         'Vila Velha',
         'maria.oliveira@email.com',
         '(27) 99999-2222',
-        'Av. Central, 456'
-    ),
-    (
-        'Pedro Souza Lima',
-        '345.678.901-23',
-        'Serra',
-        'pedro.souza@email.com',
-        '(27) 99999-3333',
-        'Rua do Campo, 789'
+        'Av. Central, 456',
+        NULL
     ),
     (
         'Ana Carolina Pereira',
@@ -201,39 +214,26 @@ VALUES (
         'Cariacica',
         'ana.pereira@email.com',
         '(27) 99999-4444',
-        'Rua das Palmeiras, 101'
+        'Rua das Palmeiras, 101',
+        NULL
     ),
     (
-        'Carlos Eduardo Martins',
-        '567.890.123-45',
+        'Cliente Teste Um',
+        '111.222.333-44',
         'Vitória',
-        'carlos.martins@email.com',
-        '(27) 99999-5555',
-        'Av. Beira Mar, 202'
+        'cliente.teste1@email.com',
+        '(27) 98888-1111',
+        'Rua de Teste, 100',
+        '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre'
     ),
     (
-        'Fernanda Alves Rodrigues',
-        '678.901.234-56',
+        'Cliente Teste Dois',
+        '222.333.444-55',
         'Vila Velha',
-        'fernanda.alves@email.com',
-        '(27) 99999-6666',
-        'Rua do Sol, 303'
-    ),
-    (
-        'Roberto Carlos Silva',
-        '789.012.345-67',
-        'Serra',
-        'roberto.silva@email.com',
-        '(27) 99999-7777',
-        'Rua Nova, 404'
-    ),
-    (
-        'Juliana Santos Costa',
-        '890.123.456-78',
-        'Vitória',
-        'juliana.santos@email.com',
-        '(27) 99999-8888',
-        'Av. da Praia, 505'
+        'cliente.teste2@email.com',
+        '(27) 98888-2222',
+        'Av. de Teste, 200',
+        '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre'
     );
 
 -- Sample services
@@ -327,6 +327,10 @@ VALUES
 -- Installation success message
 SELECT 'SUCCESS: Database created with sample data!' as status;
 
+SELECT 'ARCHITECTURE: Dual system - Public (/) + Admin (/admin/)' as architecture;
+
+SELECT 'UPDATED: Compatible with cart system and flexible fields' as compatibility;
+
 SELECT 'LOGIN: admin / admin123' as admin_credentials;
 
-SELECT 'LOGIN: operador1 / user123' as operator_credentials;
+SELECT 'LOGIN: operador / user123' as operator_credentials;

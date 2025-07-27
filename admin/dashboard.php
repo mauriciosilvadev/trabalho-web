@@ -50,22 +50,22 @@ $user = Auth::getUser();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../servicos/list.php">
+                        <a class="nav-link" href="servicos/list.php">
                             <i class="bi bi-list-task"></i> Serviços
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../clientes/list.php">
+                        <a class="nav-link" href="clientes/list.php">
                             <i class="bi bi-people"></i> Clientes
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../contratacao/buscar.php">
-                            <i class="bi bi-search"></i> Buscar/Contratar
+                        <a class="nav-link" href="contratacao/listar.php">
+                            <i class="bi bi-file-earmark-text"></i> Contratos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../usuarios/list.php">
+                        <a class="nav-link" href="usuarios/list.php">
                             <i class="bi bi-person-gear"></i> Usuários
                         </a>
                     </li>
@@ -150,7 +150,7 @@ $user = Auth::getUser();
                         <i class="bi bi-plus-circle text-primary" style="font-size: 3rem;"></i>
                         <h5 class="card-title mt-3">Novo Serviço</h5>
                         <p class="card-text">Cadastrar um novo serviço no sistema</p>
-                        <a href="../servicos/form.php" class="btn btn-primary">
+                        <a href="servicos/form.php" class="btn btn-primary">
                             <i class="bi bi-plus"></i> Criar Serviço
                         </a>
                     </div>
@@ -162,7 +162,7 @@ $user = Auth::getUser();
                         <i class="bi bi-person-plus text-success" style="font-size: 3rem;"></i>
                         <h5 class="card-title mt-3">Novo Cliente</h5>
                         <p class="card-text">Cadastrar um novo cliente no sistema</p>
-                        <a href="../clientes/form.php" class="btn btn-success">
+                        <a href="clientes/form.php" class="btn btn-success">
                             <i class="bi bi-plus"></i> Criar Cliente
                         </a>
                     </div>
@@ -171,11 +171,11 @@ $user = Auth::getUser();
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body text-center">
-                        <i class="bi bi-search text-info" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Buscar Serviços</h5>
-                        <p class="card-text">Buscar e contratar serviços disponíveis</p>
-                        <a href="../contratacao/buscar.php" class="btn btn-info">
-                            <i class="bi bi-search"></i> Buscar
+                        <i class="bi bi-file-earmark-text text-info" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Gerenciar Contratos</h5>
+                        <p class="card-text">Visualizar e gerenciar contratos existentes</p>
+                        <a href="contratacao/listar.php" class="btn btn-info">
+                            <i class="bi bi-list-check"></i> Ver Contratos
                         </a>
                     </div>
                 </div>

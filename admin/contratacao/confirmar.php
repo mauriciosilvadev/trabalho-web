@@ -1,8 +1,8 @@
 <?php
-require_once '../config/auth.php';
-require_once '../dao/ServicoDAO.php';
-require_once '../dao/ClienteDAO.php';
-require_once '../dao/ContratacaoDAO.php';
+require_once '../../config/auth.php';
+require_once '../../dao/ServicoDAO.php';
+require_once '../../dao/ClienteDAO.php';
+require_once '../../dao/ContratacaoDAO.php';
 
 Auth::requireAuth();
 
@@ -158,7 +158,7 @@ $csrfToken = Auth::generateCSRFToken();
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="../public/dashboard.php">
+            <a class="navbar-brand" href="../dashboard.php">
                 <i class="bi bi-gear-fill"></i> Sistema de Gestão de Serviços
             </a>
 
@@ -169,7 +169,7 @@ $csrfToken = Auth::generateCSRFToken();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="../public/dashboard.php">
+                        <a class="nav-link" href="../dashboard.php">
                             <i class="bi bi-house"></i> Dashboard
                         </a>
                     </li>
@@ -201,7 +201,7 @@ $csrfToken = Auth::generateCSRFToken();
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($user['nome']) ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../public/logout.php">
+                            <li><a class="dropdown-item" href="logout.php">
                                     <i class="bi bi-box-arrow-right"></i> Sair
                                 </a></li>
                         </ul>
@@ -257,7 +257,7 @@ $csrfToken = Auth::generateCSRFToken();
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="../public/dashboard.php" class="btn btn-primary me-2">
+                        <a href="../dashboard.php" class="btn btn-primary me-2">
                             <i class="bi bi-house"></i> Ir para Dashboard
                         </a>
                         <a href="buscar.php" class="btn btn-outline-primary">
