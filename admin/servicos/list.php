@@ -1,7 +1,7 @@
 <?php
-require_once '../../config/auth.php';
-require_once '../../dao/ServicoDAO.php';
-require_once '../../dao/DataDisponivelDAO.php';
+require_once '../../shared/config/auth.php';
+require_once '../../shared/dao/ServicoDAO.php';
+require_once '../../shared/dao/DataDisponivelDAO.php';
 
 Auth::requireAuth();
 
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <title>Serviços - Sistema de Gestão de Serviços</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../../shared/assets/css/style.css">
 </head>
 
 <body>
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($user['nome']) ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="logout.php">
+                            <li><a class="dropdown-item" href="../logout.php">
                                     <i class="bi bi-box-arrow-right"></i> Sair
                                 </a></li>
                         </ul>
@@ -216,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/util.js"></script>
+    <script src="../../shared/assets/js/util.js"></script>
     <script>
         function deleteService(id, name) {
             document.getElementById('serviceName').textContent = name;

@@ -422,7 +422,7 @@ class ContratacaoDAO
                     $servico['valor']
                 );
 
-                require_once 'dao/DataDisponivelDAO.php';
+                require_once __DIR__ . '/DataDisponivelDAO.php';
                 $dataDAO = new DataDisponivelDAO();
                 $dataDAO->marcarComoIndisponivel($servico['data_disponivel_id']);
             }

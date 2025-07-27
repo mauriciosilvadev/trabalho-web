@@ -1,7 +1,7 @@
 <?php
-require_once '../../config/auth.php';
-require_once '../../dao/ServicoDAO.php';
-require_once '../../dao/DataDisponivelDAO.php';
+require_once '../../shared/config/auth.php';
+require_once '../../shared/dao/ServicoDAO.php';
+require_once '../../shared/dao/DataDisponivelDAO.php';
 
 Auth::requireAuth();
 
@@ -146,8 +146,8 @@ $tipos = $servicoDAO->getTypes();
     <title><?= $isEdit ? 'Editar' : 'Novo' ?> Serviço - Sistema de Gestão de Serviços</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/datas-disponiveis.css">
+    <link rel="stylesheet" href="../../shared/assets/css/style.css">
+    <link rel="stylesheet" href="../../shared/assets/css/datas-disponiveis.css">
 </head>
 
 <body>
@@ -197,7 +197,7 @@ $tipos = $servicoDAO->getTypes();
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($user['nome']) ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="logout.php">
+                            <li><a class="dropdown-item" href="../logout.php">
                                     <i class="bi bi-box-arrow-right"></i> Sair
                                 </a></li>
                         </ul>
@@ -395,7 +395,7 @@ $tipos = $servicoDAO->getTypes();
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/util.js"></script>
+    <script src="../../shared/assets/js/util.js"></script>
     <script>
         $(document).ready(function() {
             // Auto-format price input

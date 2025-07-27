@@ -73,7 +73,7 @@ function syncCartWithSession() {
         syncUrl = 'sync_cart.php';
     } else {
         // Estamos na área pública
-        syncUrl = 'sync_cart.php';
+        syncUrl = 'api/sync_cart.php';
     }
     
     $.ajax({
@@ -172,11 +172,9 @@ function handleAddToCart(e) {
     saveCart();
     
     // Update button state
-    $(this).prop('disabled', true).text('Adicionado ao Carrinho');
+    $(this).prop('disabled', true).text('Selecionando Data...');
     
-    showSuccess('Serviço adicionado ao carrinho!');
-    
-    // Show date selection modal
+    // Show date selection modal (success message will show after date selection)
     showDateSelectionModal(serviceId, serviceName);
 }
 
@@ -226,7 +224,13 @@ function handleSelectDate(e) {
         
         // Update UI
         button.closest('.modal').modal('hide');
-        showSuccess('Data selecionada com sucesso');
+        
+        // Update button text to show item is in cart
+        $(`.add-to-cart[data-service-id="${serviceId}"]`)
+            .text('Adicionado ao Carrinho');
+        
+        // Show success message now that date is selected
+        showSuccess(`${cartItem.serviceName} adicionado ao carrinho com data selecionada!`);
         
         // Update cart display
         updateCartDisplay();
@@ -246,7 +250,7 @@ function showDateSelectionModal(serviceId, serviceName) {
         getDateUrl = 'get_dates.php';
     } else {
         // Estamos na área pública
-        getDateUrl = 'get_dates.php';
+        getDateUrl = 'api/get_dates.php';
     }
     
     // Load available dates via AJAX
@@ -321,7 +325,27 @@ function displayDateModal(serviceId, serviceName, dates) {
     $('body').append(modalHtml);
     
     // Show modal
-    new bootstrap.Modal(document.getElementById('dateModal')).show();
+    const modal = new bootstrap.Modal(document.getElementById('dateModal'));
+    modal.show();
+    
+    // Handle modal close without date selection
+    $('#dateModal').on('hidden.bs.modal', function() {
+        const cartItem = cart.items.find(item => item.serviceId === serviceId);
+        if (cartItem && !cartItem.selectedDate) {
+            // Remove item from cart if no date was selected
+            cart.items = cart.items.filter(item => item.serviceId !== serviceId);
+            cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
+            saveCart();
+            
+            // Re-enable add to cart button
+            $(`.add-to-cart[data-service-id="${serviceId}"]`)
+                .prop('disabled', false)
+                .text('Adicionar ao Carrinho');
+            
+            updateCartDisplay();
+            showError('Serviço removido do carrinho - data não selecionada');
+        }
+    });
 }
 
 /**

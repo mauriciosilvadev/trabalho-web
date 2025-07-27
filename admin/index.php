@@ -1,6 +1,6 @@
 <?php
-require_once '../config/auth.php';
-require_once '../dao/UsuarioDAO.php';
+require_once '../shared/config/auth.php';
+require_once '../shared/dao/UsuarioDAO.php';
 
 // Check if user is already authenticated
 Auth::checkRememberToken();
@@ -89,9 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <button type="submit" class="btn btn-primary">Entrar</button>
                             </div>
                         </form>
-                    </div>
-                    <div class="card-footer text-center text-muted">
-                        <small>Use admin/admin123 para acessar</small>
                     </div>
                 </div>
             </div>

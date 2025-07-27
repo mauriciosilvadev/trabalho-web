@@ -1,6 +1,6 @@
 <?php
-require_once '../../config/auth.php';
-require_once '../../dao/UsuarioDAO.php';
+require_once '../../shared/config/auth.php';
+require_once '../../shared/dao/UsuarioDAO.php';
 
 Auth::requireAuth();
 $user = Auth::getUser();
@@ -41,7 +41,7 @@ $csrfToken = Auth::generateCSRFToken();
     <title>Usuários - Sistema de Gestão de Serviços</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../../shared/assets/css/style.css">
 </head>
 
 <body>
@@ -91,7 +91,7 @@ $csrfToken = Auth::generateCSRFToken();
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($user['nome']) ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="logout.php">
+                            <li><a class="dropdown-item" href="../logout.php">
                                     <i class="bi bi-box-arrow-right"></i> Sair
                                 </a></li>
                         </ul>

@@ -7,8 +7,8 @@
 
 session_start();
 
-require_once 'dao/ContratacaoDAO.php';
-require_once 'dao/ClienteDAO.php';
+require_once '../shared/dao/ContratacaoDAO.php';
+require_once '../shared/dao/ClienteDAO.php';
 
 // Check if client is logged in
 if (!isset($_SESSION['client_id'])) {
@@ -40,7 +40,7 @@ $contratos = $contratacaoDAO->buscarPorCliente($clienteId);
     <title>Meus Contratos - Sistema de Serviços</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
+    <link href="../shared/assets/css/style.css" rel="stylesheet">
 </head>
 
 <body>
