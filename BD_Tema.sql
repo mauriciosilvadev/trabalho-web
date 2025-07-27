@@ -144,7 +144,7 @@ CREATE TABLE `agendamentos` (
 -- SAMPLE DATA
 -- ========================================
 
--- Users (admin/admin123, operador/user123, teste_admin/teste123, teste_cliente/teste123)
+-- Users (admin/admin123, operador/user123)
 INSERT INTO
     `usuarios` (
         `login`,
@@ -158,7 +158,7 @@ VALUES (
         'admin',
         '$2y$10$vAftfLdFDbA0qZsc6wyJUu1QqKq86vlCvBWEkianPQXYA5vrObXSi',
         'Administrador do Sistema',
-        'admin@lojaweb.com',
+        'admin@sistema.com',
         'admin',
         1
     ),
@@ -166,20 +166,12 @@ VALUES (
         'operador',
         '$2y$10$rNz8NqiYJ.JK/d97lKdGhecm8pbwhwnYnKVxZ.mtoj7FOfZmfFTyi',
         'João Silva - Operador',
-        'operador@lojaweb.com',
+        'operador@sistema.com',
         'operador',
-        1
-    ),
-    (
-        'teste_admin',
-        '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre',
-        'Admin de Teste',
-        'admin.teste@empresa.com',
-        'admin',
         1
     );
 
--- Sample clients (only essential ones with some having passwords for testing)
+-- Sample clients (only 2 clients for testing with passwords)
 INSERT INTO
     `clientes` (
         `nome`,
@@ -197,7 +189,7 @@ VALUES (
         'joao.silva@email.com',
         '(27) 99999-1111',
         'Rua das Flores, 123',
-        NULL
+        '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre'
     ),
     (
         'Maria Oliveira Costa',
@@ -206,33 +198,6 @@ VALUES (
         'maria.oliveira@email.com',
         '(27) 99999-2222',
         'Av. Central, 456',
-        NULL
-    ),
-    (
-        'Ana Carolina Pereira',
-        '456.789.012-34',
-        'Cariacica',
-        'ana.pereira@email.com',
-        '(27) 99999-4444',
-        'Rua das Palmeiras, 101',
-        NULL
-    ),
-    (
-        'Cliente Teste Um',
-        '111.222.333-44',
-        'Vitória',
-        'cliente.teste1@email.com',
-        '(27) 98888-1111',
-        'Rua de Teste, 100',
-        '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre'
-    ),
-    (
-        'Cliente Teste Dois',
-        '222.333.444-55',
-        'Vila Velha',
-        'cliente.teste2@email.com',
-        '(27) 98888-2222',
-        'Av. de Teste, 200',
         '$2y$10$MmRJaeA7b23UFg5K8QigDed.SgBaYVjYut9ihOtHC3toGIrZ1rJre'
     );
 
@@ -329,8 +294,10 @@ SELECT 'SUCCESS: Database created with sample data!' as status;
 
 SELECT 'ARCHITECTURE: Dual system - Public (/) + Admin (/admin/)' as architecture;
 
-SELECT 'UPDATED: Compatible with cart system and flexible fields' as compatibility;
+SELECT 'USERS: 1 admin, 1 operador, 2 clients with passwords' as users_created;
 
-SELECT 'LOGIN: admin / admin123' as admin_credentials;
+SELECT 'LOGIN ADMIN: admin / admin123' as admin_credentials;
 
-SELECT 'LOGIN: operador / user123' as operator_credentials;
+SELECT 'LOGIN OPERADOR: operador / user123' as operator_credentials;
+
+SELECT 'LOGIN CLIENTES: joao.silva@email.com e maria.oliveira@email.com / teste123' as client_credentials;
