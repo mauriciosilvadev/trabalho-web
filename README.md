@@ -1,53 +1,77 @@
 # Sistema de Gestão de Serviços
 
-Sistema completo para gestão e contratação de serviços com **arquitetura dual**: administrativa e pública.
+Sistema web completo para gestão e contratação de serviços com **arquitetura dual**: interface administrativa e pública.
 
-### 🏠 **Área Pública (Clientes)**
-- **URL Principal**: `http://localhost/trabalho/`
+## 📋 Apresentação do Sistema
 
-#### **👥 Clientes de Teste:**
-| Email | Senha | Nome | Descrição |
-|-------|-------|------|-----------|
-| `cliente.teste1@email.com` | `teste123` | Cliente Teste Um | Cliente de teste para contratações |
-| `cliente.teste2@email.com` | `teste123` | Cliente Teste Dois | Cliente de teste para contratações |
+O sistema permite que **clientes** busquem e contratem serviços através de uma interface pública intuitiva, enquanto **administradores** gerenciam todo o sistema através de um painel administrativo completo.
 
-- **Funcionalidades**: Buscar serviços, carrinho, cadastro, login, contratação
+### 🌟 Principais Funcionalidades:
+- **Área Pública**: Catálogo de serviços, carrinho de compras, sistema de checkout
+- **Área Admin**: CRUD completo, dashboard com estatísticas, gestão de contratos
+- **Sistema de Carrinho**: Funciona com localStorage + sessões PHP
+- **Gestão de Contratos**: Controle de status, relatórios, histórico
 
-### 🔧 **Área Administrativa** 
-- **URL Admin**: `http://localhost/trabalho/admin/`
+## 🚀 Como Usar
 
-#### **👤 Usuários Administrativos:**
+### 1. **Instalação do Banco de Dados**
+- Abra o phpMyAdmin
+- Importe o arquivo `BD_Tema.sql`
+- ✅ **Pronto!** O banco será criado automaticamente com dados de teste
+
+### 2. **Acessar o Sistema**
+
+#### 🏠 **Área Pública (Clientes)**
+- **URL**: `http://localhost/trabalho/`
+- **Funcionalidades**: Buscar serviços, adicionar ao carrinho, fazer checkout, ver contratos
+
+#### 🔧 **Área Administrativa**
+- **URL**: `http://localhost/trabalho/admin/`
+- **Funcionalidades**: Dashboard, gerenciar serviços/clientes/contratos/usuários
+
+## 🔑 Credenciais de Acesso
+
+### **👤 Usuários Administrativos**
 | Login | Senha | Tipo | Descrição |
 |-------|-------|------|-----------|
-| `admin` | `admin123` | **Admin** | Acesso total (CRUD, relatórios, usuários) |
-| `operador` | `user123` | **Operador** | João Silva - Acesso limitado |
+| `admin` | `admin123` | **Administrador** | Acesso total ao sistema |
+| `operador` | `user123` | **Operador** | Acesso às operações básicas |
 
-#### **🧪 Usuários de Teste:**
-| Login | Senha | Tipo | Descrição |
-|-------|-------|------|-----------|
-| `teste_admin` | `teste123` | **Admin** | Admin de teste para desenvolvimento |
+### **👥 Clientes de Teste**
+| Nome | CPF | Email | Senha | Localização |
+|------|-----|-------|-------|-------------|
+| João Silva Santos | 123.456.789-01 | joao.silva@email.com | `teste123` | Vitória |
+| Maria Oliveira Costa | 234.567.890-12 | maria.oliveira@email.com | `teste123` | Vila Velha |
 
-- **Funcionalidades**: Dashboard, CRUD completo, relatórios
+*Os clientes podem fazer login na área pública ou serem criados dinamicamente no checkout.*
 
-### 🏠 **Área Pública (Clientes)**
-- **URL Principal**: `http://localhost/trabalho/`
+## 📊 Estrutura do Sistema
 
-#### **👥 Clientes de Teste:**
-| Email | Senha | Nome | Descrição |
-|-------|-------|------|-----------|
-| `cliente.teste1@email.com` | `teste123` | Cliente Teste Um | Cliente de teste para contratações |
-| `cliente.teste2@email.com` | `teste123` | Cliente Teste Dois | Cliente de teste para contratações |
+### **Tecnologias Utilizadas:**
+- **Backend**: PHP 8+ com PDO
+- **Frontend**: HTML5, CSS3, JavaScript (ES6), Bootstrap 5
+- **Banco**: MySQL com relacionamentos otimizados
+- **Arquitetura**: MVC com padrão DAO
 
-- **Funcionalidades**: Buscar serviços, carrinho, cadastro, login, contratação
+### **Principais Recursos:**
+- ✅ Sistema de carrinho sincronizado (localStorage + PHP)
+- ✅ Checkout completo com validações
+- ✅ Dashboard administrativo com estatísticas
+- ✅ Gestão de status de contratos em tempo real
+- ✅ Interface responsiva para todos os dispositivos
+- ✅ Separação clara de responsabilidades (Admin vs Cliente)
 
-## 🚀 Instalação Rápida
+## 🎯 Fluxo de Uso Típico
 
-### 1. **Banco de Dados** (Uma única etapa!)
-Via phpMyAdmin: importe o arquivo `BD_Tema.sql`
+1. **Cliente** acessa a área pública e busca serviços
+2. **Cliente** adiciona serviços ao carrinho e faz checkout
+3. **Administrador** visualiza o novo contrato no painel admin
+4. **Administrador** altera status do contrato conforme andamento
+5. **Cliente** pode acompanhar seus contratos na área pública
 
-**✅ Pronto!** O arquivo `BD_Tema.sql` já contém:
-- Criação do banco `trabalho_web`
-- Todas as tabelas com relacionamentos compatíveis
+---
+
+**Sistema pronto para uso!** Basta importar o banco e acessar as URLs indicadas com as credenciais fornecidas.
 - Dados de exemplo (usuários, clientes, serviços)
 - Senhas já configuradas corretamente
 - Suporte para arquitetura dual (admin + público)
@@ -76,9 +100,9 @@ http://localhost/trabalho/admin/     ← Área Administrativa
 
 | Tipo | Quantidade | Localização | Características |
 |------|------------|-------------|-----------------|
-| **Administradores** | 1 + 1 teste | `/admin/` | Acesso total ao sistema administrativo |
+| **Administradores** | 1 | `/admin/` | Acesso total ao sistema administrativo |
 | **Operadores** | 1 | `/admin/` | Acesso limitado ao sistema administrativo |
-| **Clientes** | 3 + 2 teste | `/` (público) | Contratação de serviços |
+| **Clientes** | 2 | `/` (público) | Contratação de serviços com login |
 
 ### **🔐 Hierarquia de Permissões:**
 
@@ -346,7 +370,7 @@ mysql -u root < BD_Tema.sql
 
 # Credenciais corretas:
 # admin / admin123
-# operador1 / user123
+# operador / user123
 ```
 
 ### Erro de Permissões
@@ -364,11 +388,11 @@ O sistema já vem configurado com:
 
 ### Usuários
 - **Admin**: admin/admin123
-- **Operadores**: operador1 e operador2 (senha: user123)
+- **Operador**: operador/user123
 
 ### Clientes
-- 8 clientes de exemplo nas cidades da Grande Vitória
-- CPFs e emails únicos já configurados
+- **João Silva**: joao.silva@email.com/teste123 (CPF: 123.456.789-01)
+- **Maria Oliveira**: maria.oliveira@email.com/teste123 (CPF: 234.567.890-12)
 
 ### Serviços
 - **Desenvolvimento de Site** (R$ 2.500,00)
@@ -384,7 +408,7 @@ O sistema já vem configurado com:
 ## 📞 Notas Importantes
 
 1. **Instalação**: Use apenas o arquivo `BD_Tema.sql` - ele contém tudo!
-2. **Credenciais**: Admin (admin/admin123) - Operador (operador1/user123)
+2. **Credenciais**: Admin (admin/admin123) - Operador (operador/user123)
 3. **Primeiro acesso**: Use a conta admin para gerenciar o sistema
 4. **XAMPP**: Sistema otimizado para ambiente XAMPP padrão
 5. **Segurança**: Senhas já estão com hash correto - não há problemas de login
