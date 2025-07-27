@@ -22,39 +22,50 @@ class ContratacaoDAO
         try {
             $this->db->beginTransaction();
 
-            // Create contract
+            // Create contract with valor_total field
             $stmt = $this->db->prepare("
-                INSERT INTO contratacoes (cliente_id, total, status) 
-                VALUES (?, ?, 'confirmada')
+                INSERT INTO contratacoes (cliente_id, total, valor_total, status) 
+                VALUES (?, ?, ?, 'confirmada')
             ");
-            $stmt->execute([$clienteId, $total]);
+            $stmt->execute([$clienteId, $total, $total]);
             $contratacaoId = $this->db->lastInsertId();
 
             // Add services to contract
             $stmt = $this->db->prepare("
-                INSERT INTO contratacao_servicos (contratacao_id, servico_id, data_id, preco) 
-                VALUES (?, ?, ?, ?)
+                INSERT INTO contratacao_servicos (contrato_id, contratacao_id, servico_id, data_id, preco, valor, quantidade) 
+                VALUES (?, ?, ?, ?, ?, ?, 1)
             ");
 
             foreach ($cartItems as $item) {
+                // Get the correct service ID
+                $servicoId = isset($item['id']) ? $item['id'] : (isset($item['servico_id']) ? $item['servico_id'] : null);
+                $dataId = isset($item['data_id']) ? $item['data_id'] : null;
+                $preco = isset($item['preco']) ? $item['preco'] : 0;
+
+                if (!$servicoId || !$dataId) {
+                    throw new Exception("Dados do serviço incompletos");
+                }
+
                 // Check if date is still available
                 $checkStmt = $this->db->prepare("
                     SELECT disponivel FROM datas_disponiveis 
                     WHERE id = ? FOR UPDATE
                 ");
-                $checkStmt->execute([$item['data_id']]);
+                $checkStmt->execute([$dataId]);
                 $dateAvailable = $checkStmt->fetchColumn();
 
                 if (!$dateAvailable || $dateAvailable != 1) {
-                    throw new Exception("Date is no longer available");
+                    throw new Exception("Data não está mais disponível");
                 }
 
                 // Insert contract service
                 $stmt->execute([
-                    $contratacaoId,
-                    $item['servico_id'],
-                    $item['data_id'],
-                    $item['preco']
+                    $contratacaoId,  // contrato_id
+                    $contratacaoId,  // contratacao_id (mesma referência)
+                    $servicoId,
+                    $dataId,
+                    $preco,
+                    $preco
                 ]);
 
                 // Mark date as unavailable
@@ -63,7 +74,7 @@ class ContratacaoDAO
                     SET disponivel = 0 
                     WHERE id = ?
                 ");
-                $updateStmt->execute([$item['data_id']]);
+                $updateStmt->execute([$dataId]);
             }
 
             $this->db->commit();
@@ -185,7 +196,7 @@ class ContratacaoDAO
                 SELECT c.*, cl.nome as cliente_nome, cl.email as cliente_email
                 FROM contratacoes c
                 INNER JOIN clientes cl ON c.cliente_id = cl.id
-                ORDER BY c.created_at DESC
+                ORDER BY c.criado_em DESC
             ");
             $stmt->execute();
             return $stmt->fetchAll();
@@ -217,8 +228,8 @@ class ContratacaoDAO
             $stmt = $this->db->prepare("
                 SELECT COUNT(*) as count 
                 FROM contratacoes 
-                WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) 
-                AND YEAR(created_at) = YEAR(CURRENT_DATE())
+                WHERE MONTH(criado_em) = MONTH(CURRENT_DATE()) 
+                AND YEAR(criado_em) = YEAR(CURRENT_DATE())
             ");
             $stmt->execute();
             $stats['contratos_mes'] = $stmt->fetchColumn();
@@ -247,9 +258,66 @@ class ContratacaoDAO
         $sql = "SELECT c.*, cl.nome as cliente_nome, cl.cpf, cl.cidade 
                 FROM contratacoes c 
                 INNER JOIN clientes cl ON c.cliente_id = cl.id 
-                ORDER BY c.created_at DESC";
+                ORDER BY c.criado_em DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    public function getAll($filters = [])
+    {
+        $sql = "SELECT 
+            c.id,
+            c.cliente_id,
+            c.status,
+            c.total as valor_total,
+            c.criado_em,
+            cl.nome as cliente_nome,
+            cl.email as cliente_email,
+            COUNT(cs.id) as total_servicos
+        FROM contratacoes c 
+        INNER JOIN clientes cl ON c.cliente_id = cl.id 
+        LEFT JOIN contratacao_servicos cs ON c.id = cs.contratacao_id
+        WHERE 1=1";
+
+        $params = [];
+
+        // Apply filters
+        if (!empty($filters['cliente_id'])) {
+            $sql .= " AND c.cliente_id = ?";
+            $params[] = $filters['cliente_id'];
+        }
+
+        if (!empty($filters['status'])) {
+            $sql .= " AND c.status = ?";
+            $params[] = $filters['status'];
+        }
+
+        if (!empty($filters['data_inicio'])) {
+            $sql .= " AND DATE(c.criado_em) >= ?";
+            $params[] = $filters['data_inicio'];
+        }
+
+        if (!empty($filters['data_fim'])) {
+            $sql .= " AND DATE(c.criado_em) <= ?";
+            $params[] = $filters['data_fim'];
+        }
+
+        if (!empty($filters['servico_nome'])) {
+            $sql .= " AND EXISTS (
+                SELECT 1 FROM contratacao_servicos cs2 
+                INNER JOIN servicos s ON cs2.servico_id = s.id 
+                WHERE cs2.contratacao_id = c.id AND s.nome LIKE ?
+            )";
+            $params[] = '%' . $filters['servico_nome'] . '%';
+        }
+
+        $sql .= " GROUP BY c.id, c.cliente_id, c.status, c.total, c.criado_em, cl.nome, cl.email";
+        $sql .= " ORDER BY c.criado_em DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
 
         return $stmt->fetchAll();
     }
@@ -300,12 +368,24 @@ class ContratacaoDAO
         return $stmt->execute([$id]);
     }
 
+    public function updateStatus($id, $status)
+    {
+        $allowedStatuses = ['pendente', 'ativo', 'confirmada', 'concluido', 'cancelado', 'cancelada'];
+        if (!in_array($status, $allowedStatuses)) {
+            throw new Exception('Status inválido: ' . $status);
+        }
+
+        $sql = "UPDATE contratacoes SET status = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$status, $id]);
+    }
+
     public function listarServicosPorContratacao($contratacaoId)
     {
         $sql = "SELECT cs.*, s.nome as servico_nome, s.tipo, dd.data
                 FROM contratacao_servicos cs
                 INNER JOIN servicos s ON cs.servico_id = s.id
-                INNER JOIN datas_disponiveis dd ON cs.data_disponivel_id = dd.id
+                LEFT JOIN datas_disponiveis dd ON cs.data_id = dd.id
                 WHERE cs.contratacao_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$contratacaoId]);
@@ -315,7 +395,7 @@ class ContratacaoDAO
 
     public function buscarPorCliente($clienteId)
     {
-        $sql = "SELECT * FROM contratacoes WHERE cliente_id = ? ORDER BY created_at DESC";
+        $sql = "SELECT * FROM contratacoes WHERE cliente_id = ? ORDER BY criado_em DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$clienteId]);
 

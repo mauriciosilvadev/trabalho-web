@@ -145,7 +145,7 @@ $contratos = $contratacaoDAO->buscarPorCliente($clienteId);
                                 <div class="row">
                                     <div class="col-6">
                                         <small class="text-muted">Data da Contratação</small>
-                                        <p class="mb-2"><?= date('d/m/Y', strtotime($contrato['created_at'])) ?></p>
+                                        <p class="mb-2"><?= date('d/m/Y', strtotime($contrato['criado_em'])) ?></p>
                                     </div>
                                     <div class="col-6">
                                         <small class="text-muted">Valor Total</small>

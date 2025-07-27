@@ -38,13 +38,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Primeiro calcular total
         foreach ($_SESSION['cart'] as $cartItem) {
             if (!isset($cartItem['data_contratacao'])) {
-                throw new Exception('Selecione uma data para o serviço: ' . htmlspecialchars($cartItem['nome']));
+                $serviceName = isset($cartItem['nome']) ? $cartItem['nome'] : (isset($cartItem['serviceName']) ? $cartItem['serviceName'] : 'Serviço');
+                throw new Exception('Selecione uma data para o serviço: ' . htmlspecialchars($serviceName));
             }
 
             // Buscar serviço para verificar preço atual
-            $servico = $servicoDAO->buscarPorId($cartItem['id']);
+            $serviceId = isset($cartItem['id']) ? $cartItem['id'] : (isset($cartItem['serviceId']) ? $cartItem['serviceId'] : null);
+
+            if (!$serviceId) {
+                throw new Exception('ID do serviço não encontrado');
+            }
+
+            $servico = $servicoDAO->buscarPorId($serviceId);
             if (!$servico) {
-                throw new Exception('Serviço não encontrado: ' . $cartItem['id']);
+                throw new Exception('Serviço não encontrado: ' . $serviceId);
             }
 
             $totalGeral += $servico['preco'];
@@ -54,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $contratacaoId = $contratacaoDAO->create($_SESSION['client_id'], $_SESSION['cart'], $totalGeral);
 
         if (!$contratacaoId) {
-            throw new Exception('Erro ao processar contratação. Tente novamente.');
+            // Log adicional para debug
+            error_log("Checkout failed - Client ID: " . $_SESSION['client_id'] . ", Cart: " . json_encode($_SESSION['cart']) . ", Total: " . $totalGeral);
+            throw new Exception('Erro ao processar contratação. Verifique se todas as datas estão selecionadas.');
         }
 
         // Limpar carrinho após sucesso
@@ -153,11 +162,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label class="form-label">Nome:</label>
-                                        <p class="fw-bold"><?= htmlspecialchars($_SESSION['client_name']) ?></p>
+                                        <p class="fw-bold"><?= htmlspecialchars($_SESSION['client_name'] ?? 'Nome não informado') ?></p>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Email:</label>
-                                        <p class="fw-bold"><?= htmlspecialchars($_SESSION['client_email']) ?></p>
+                                        <p class="fw-bold"><?= htmlspecialchars($_SESSION['client_email'] ?? 'Email não informado') ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -238,11 +247,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="admin/contratacao/carrinho.js"></script>
     <script>
         $(document).ready(function() {
-            // Carregar itens do checkout
-            loadCheckoutItems();
+            // Se checkout foi bem-sucedido, limpar carrinho do localStorage
+            <?php if ($success): ?>
+                // Usar função clearCartSilent() se disponível (sem confirmação)
+                if (typeof clearCartSilent === 'function') {
+                    clearCartSilent();
+                } else {
+                    // Fallback manual
+                    localStorage.removeItem('service_cart');
+                    if (typeof cart !== 'undefined') {
+                        cart = {
+                            items: [],
+                            total: 0
+                        };
+                    }
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount();
+                    }
+                }
+            <?php else: ?>
+                // Carregar itens do checkout
+                loadCheckoutItems();
 
-            // Atualizar total
-            updateCartTotal();
+                // Atualizar total
+                updateCartTotal();
+            <?php endif; ?>
 
             // Verificar termos antes de finalizar
             $('#acceptTerms').change(function() {

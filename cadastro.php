@@ -76,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($senha)) {
                 $_SESSION['client_id'] = $newId;
                 $_SESSION['client_name'] = $nome;
+                $_SESSION['client_email'] = $email;
             }
         } else {
             $errors[] = 'Erro ao cadastrar cliente.';

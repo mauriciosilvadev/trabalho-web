@@ -1,7 +1,7 @@
 <?php
-require_once '../config/auth.php';
-require_once '../dao/ServicoDAO.php';
-require_once '../dao/DataDisponivelDAO.php';
+require_once '../../config/auth.php';
+require_once '../../dao/ServicoDAO.php';
+require_once '../../dao/DataDisponivelDAO.php';
 
 Auth::requireAuth();
 
@@ -180,8 +180,8 @@ $tipos = $servicoDAO->getTypes();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../contratacao/buscar.php">
-                            <i class="bi bi-search"></i> Buscar/Contratar
+                        <a class="nav-link" href="../contratacao/listar.php">
+                            <i class="bi bi-file-earmark-text"></i> Contratos
                         </a>
                     </li>
                     <li class="nav-item">

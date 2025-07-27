@@ -1,6 +1,6 @@
 <?php
-require_once '../config/auth.php';
-require_once '../dao/UsuarioDAO.php';
+require_once '../../config/auth.php';
+require_once '../../dao/UsuarioDAO.php';
 
 Auth::requireAuth();
 
@@ -160,8 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../contratacao/buscar.php">
-                            <i class="bi bi-search"></i> Buscar/Contratar
+                        <a class="nav-link" href="../contratacao/listar.php">
+                            <i class="bi bi-file-earmark-text"></i> Contratos
                         </a>
                     </li>
                     <li class="nav-item">

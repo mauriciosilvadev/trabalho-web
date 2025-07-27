@@ -2,17 +2,43 @@
 
 Sistema completo para gestão e contratação de serviços com **arquitetura dual**: administrativa e pública.
 
-## 🌐 Acessos do Sistema
-
 ### 🏠 **Área Pública (Clientes)**
 - **URL Principal**: `http://localhost/trabalho/`
+
+#### **👥 Clientes de Teste:**
+| Email | Senha | Nome | Descrição |
+|-------|-------|------|-----------|
+| `cliente.teste1@email.com` | `teste123` | Cliente Teste Um | Cliente de teste para contratações |
+| `cliente.teste2@email.com` | `teste123` | Cliente Teste Dois | Cliente de teste para contratações |
+
 - **Funcionalidades**: Buscar serviços, carrinho, cadastro, login, contratação
 
 ### 🔧 **Área Administrativa** 
 - **URL Admin**: `http://localhost/trabalho/admin/`
-- **Login**: `admin` / `admin123`
-- **Operador**: `operador1` / `user123`
+
+#### **👤 Usuários Administrativos:**
+| Login | Senha | Tipo | Descrição |
+|-------|-------|------|-----------|
+| `admin` | `admin123` | **Admin** | Acesso total (CRUD, relatórios, usuários) |
+| `operador` | `user123` | **Operador** | João Silva - Acesso limitado |
+
+#### **🧪 Usuários de Teste:**
+| Login | Senha | Tipo | Descrição |
+|-------|-------|------|-----------|
+| `teste_admin` | `teste123` | **Admin** | Admin de teste para desenvolvimento |
+
 - **Funcionalidades**: Dashboard, CRUD completo, relatórios
+
+### 🏠 **Área Pública (Clientes)**
+- **URL Principal**: `http://localhost/trabalho/`
+
+#### **👥 Clientes de Teste:**
+| Email | Senha | Nome | Descrição |
+|-------|-------|------|-----------|
+| `cliente.teste1@email.com` | `teste123` | Cliente Teste Um | Cliente de teste para contratações |
+| `cliente.teste2@email.com` | `teste123` | Cliente Teste Dois | Cliente de teste para contratações |
+
+- **Funcionalidades**: Buscar serviços, carrinho, cadastro, login, contratação
 
 ## 🚀 Instalação Rápida
 
@@ -47,6 +73,28 @@ http://localhost/trabalho/admin/     ← Área Administrativa
 - **MySQL**: 5.7 ou superior  
 - **Servidor Web**: Apache (XAMPP recomendado)
 - **Extensões PHP**: PDO, PDO_MySQL, mbstring, json
+
+## 👥 Tipos de Usuários no Sistema
+
+### **📊 Resumo dos Usuários:**
+
+| Tipo | Quantidade | Localização | Características |
+|------|------------|-------------|-----------------|
+| **Administradores** | 1 + 1 teste | `/admin/` | Acesso total ao sistema administrativo |
+| **Operadores** | 1 | `/admin/` | Acesso limitado ao sistema administrativo |
+| **Clientes** | 3 + 2 teste | `/` (público) | Contratação de serviços |
+
+### **🔐 Hierarquia de Permissões:**
+
+1. **Admin**: CRUD completo, relatórios, gestão de usuários
+2. **Operador**: Operações básicas, sem gestão de usuários  
+3. **Cliente**: Busca, contratação e acompanhamento de serviços
+
+### **💡 Resposta à Pergunta:**
+**Sim, existem 3 tipos de usuários** baseados nos requisitos:
+- Usuários administrativos (`admin`, `operador`) 
+- Usuários públicos (`clientes`)
+- Sistema dual com autenticação separada
 
 ## 🧹 Manutenção do Projeto
 

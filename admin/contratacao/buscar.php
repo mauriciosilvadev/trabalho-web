@@ -1,7 +1,7 @@
 <?php
-require_once '../config/auth.php';
-require_once '../dao/ServicoDAO.php';
-require_once '../dao/DataDisponivelDAO.php';
+require_once '../../config/auth.php';
+require_once '../../dao/ServicoDAO.php';
+require_once '../../dao/DataDisponivelDAO.php';
 
 Auth::requireAuth();
 

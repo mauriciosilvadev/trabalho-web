@@ -30,8 +30,23 @@ try {
         exit;
     }
 
-    // Salvar carrinho na sessão
-    $_SESSION['cart'] = $cart;
+    // Converter formato JavaScript para PHP
+    $cartItems = [];
+    if (isset($cart['items']) && is_array($cart['items'])) {
+        foreach ($cart['items'] as $item) {
+            $cartItems[] = [
+                'id' => $item['serviceId'] ?? null,
+                'nome' => $item['serviceName'] ?? '',
+                'tipo' => $item['serviceType'] ?? '',
+                'preco' => $item['price'] ?? 0,
+                'data_contratacao' => $item['selectedDate'] ?? null,
+                'data_id' => $item['selectedDateId'] ?? null
+            ];
+        }
+    }
+
+    // Salvar carrinho na sessão no formato PHP
+    $_SESSION['cart'] = $cartItems;
 
     echo json_encode(['success' => true, 'message' => 'Carrinho sincronizado com sucesso']);
 } catch (Exception $e) {

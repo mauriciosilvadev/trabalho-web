@@ -440,17 +440,27 @@ function showEmptyCart() {
  */
 function clearCart() {
     if (confirm('Deseja realmente limpar todo o carrinho?')) {
-        cart = { items: [], total: 0 };
-        saveCart();
-        
-        // Re-enable all add to cart buttons
-        $('.add-to-cart').prop('disabled', false).text('Adicionar ao Carrinho');
-        
-        if (window.location.pathname.includes('carrinho.php')) {
-            showEmptyCart();
-        }
-        
+        clearCartSilent();
         showSuccess('Carrinho limpo com sucesso');
+    }
+}
+
+/**
+ * Clear cart silently (without confirmation)
+ */
+function clearCartSilent() {
+    cart = { items: [], total: 0 };
+    saveCart();
+    
+    // Re-enable all add to cart buttons
+    $('.add-to-cart').prop('disabled', false).text('Adicionar ao Carrinho');
+    
+    // Update displays
+    updateCartCount();
+    updateCartDisplay();
+    
+    if (window.location.pathname.includes('carrinho.php')) {
+        showEmptyCart();
     }
 }
 
@@ -514,4 +524,50 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+/**
+ * Get cart items in format compatible with PHP
+ */
+function getCart() {
+    // Convert cart format from JavaScript to PHP compatible format
+    return cart.items.map(item => ({
+        id: item.serviceId,
+        nome: item.serviceName,
+        tipo: item.serviceType,
+        preco: item.price,
+        data_contratacao: item.selectedDate,
+        data_id: item.selectedDateId
+    }));
+}
+
+/**
+ * Update cart total display
+ */
+function updateCartTotal() {
+    let total = 0;
+    cart.items.forEach(item => {
+        total += item.price || 0;
+    });
+    
+    const formattedTotal = 'R$ ' + total.toFixed(2).replace('.', ',');
+    $('.cart-total').text(formattedTotal);
+    
+    return total;
+}
+
+/**
+ * Update cart count display
+ */
+function updateCartCount() {
+    const count = cart.items.length;
+    $('.cart-count').text(count);
+    $('.cart-badge').text(count);
+    
+    // Hide/show cart count badge
+    if (count > 0) {
+        $('.cart-count, .cart-badge').show();
+    } else {
+        $('.cart-count, .cart-badge').hide();
+    }
 }

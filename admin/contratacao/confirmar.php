@@ -1,8 +1,8 @@
 <?php
-require_once '../config/auth.php';
-require_once '../dao/ServicoDAO.php';
-require_once '../dao/ClienteDAO.php';
-require_once '../dao/ContratacaoDAO.php';
+require_once '../../config/auth.php';
+require_once '../../dao/ServicoDAO.php';
+require_once '../../dao/ClienteDAO.php';
+require_once '../../dao/ContratacaoDAO.php';
 
 Auth::requireAuth();
 
