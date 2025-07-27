@@ -388,7 +388,7 @@ $totalReceita = array_sum(array_column($contratos, 'valor_total'));
             const modal = new bootstrap.Modal(document.getElementById('contractModal'));
 
             // Load contract details
-            fetch(`../detalhes_contrato.php?id=${contractId}`)
+            fetch(`../../public/detalhes_contrato.php?id=${contractId}`)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('contractDetails').innerHTML = html;
