@@ -1,0 +1,42 @@
+# Regras internas do Copilot Agent - NÃO COMMITAR
+copilot-rules/
+
+# Configurações locais de desenvolvimento
+config/local.php
+config/database.local.php
+
+# Logs e arquivos temporários
+logs/
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração específicos do ambiente
+.env
+.env.local
+.env.production
+
+# Cache e arquivos temporários do PHP
+*.cache
+/vendor/
+composer.lock
+
+# Arquivos de backup
+*.bak
+*.backup
+*~
+
+# Arquivos específicos do editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads e arquivos de usuários (se aplicável)
+uploads/
+user-files/
+
+# Configurações de servidor local
+.htaccess.local
+php.ini.local
