@@ -1,6 +1,6 @@
 <?php
-require_once '../../config/auth.php';
-require_once '../../dao/DataDisponivelDAO.php';
+require_once '../../shared/config/auth.php';
+require_once '../../shared/dao/DataDisponivelDAO.php';
 
 Auth::requireAuth();
 

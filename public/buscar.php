@@ -7,7 +7,7 @@
 
 session_start(); // Necessário para verificar se cliente está logado
 
-require_once 'dao/ServicoDAO.php';
+require_once '../shared/dao/ServicoDAO.php';
 
 try {
     $servicoDAO = new ServicoDAO();
@@ -45,7 +45,7 @@ try {
     <title>Buscar Serviços - Sistema de Contratação</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="../shared/assets/css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -111,7 +111,7 @@ try {
 
                     <!-- Link Admin -->
                     <li class="nav-item">
-                        <a class="nav-link" href="admin/">
+                        <a class="nav-link" href="../admin/">
                             <i class="bi bi-gear"></i> Admin
                         </a>
                     </li>
@@ -262,7 +262,7 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="admin/contratacao/carrinho.js"></script>
+    <script src="../admin/contratacao/carrinho.js"></script>
     <script>
         // Função para mostrar mensagens
         function showSuccess(message) {

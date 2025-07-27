@@ -14,7 +14,7 @@ if (!isset($_SESSION['client_id'])) {
     exit;
 }
 
-require_once 'dao/ContratacaoDAO.php';
+require_once '../shared/dao/ContratacaoDAO.php';
 
 $contratoId = $_GET['id'] ?? null;
 

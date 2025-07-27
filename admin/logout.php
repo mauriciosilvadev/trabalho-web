@@ -1,5 +1,5 @@
 <?php
-require_once '../config/auth.php';
+require_once '../shared/config/auth.php';
 
 Auth::logout();
 ?>
@@ -27,7 +27,7 @@ Auth::logout();
                             <a href="index.php" class="btn btn-primary">
                                 <i class="bi bi-arrow-left"></i> Fazer Login Novamente
                             </a>
-                            <a href="../" class="btn btn-outline-secondary">
+                            <a href="../public/" class="btn btn-outline-secondary">
                                 <i class="bi bi-house"></i> Ir para Site Público
                             </a>
                         </div>

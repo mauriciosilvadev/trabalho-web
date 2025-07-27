@@ -1,452 +1,123 @@
-# Sistema de Gestão de Serviços
+# 🏢 Sistema de Serviços - Arquitetura Reorganizada
 
-Sistema web completo para gestão e contratação de serviços com **arquitetura dual**: interface administrativa e pública.
+Sistema web para contratação de serviços com áreas públicas e administrativas separadas.
 
-## 📋 Apresentação do Sistema
+## 📁 Estrutura do Projeto
 
-O sistema permite que **clientes** busquem e contratem serviços através de uma interface pública intuitiva, enquanto **administradores** gerenciam todo o sistema através de um painel administrativo completo.
-
-### 🌟 Principais Funcionalidades:
-- **Área Pública**: Catálogo de serviços, carrinho de compras, sistema de checkout
-- **Área Admin**: CRUD completo, dashboard com estatísticas, gestão de contratos
-- **Sistema de Carrinho**: Funciona com localStorage + sessões PHP
-- **Gestão de Contratos**: Controle de status, relatórios, histórico
-
-## 🚀 Como Usar
-
-### 1. **Instalação do Banco de Dados**
-- Abra o phpMyAdmin
-- Importe o arquivo `BD_Tema.sql`
-- ✅ **Pronto!** O banco será criado automaticamente com dados de teste
-
-### 2. **Acessar o Sistema**
-
-#### 🏠 **Área Pública (Clientes)**
-- **URL**: `http://localhost/trabalho/`
-- **Funcionalidades**: Buscar serviços, adicionar ao carrinho, fazer checkout, ver contratos
-
-#### 🔧 **Área Administrativa**
-- **URL**: `http://localhost/trabalho/admin/`
-- **Funcionalidades**: Dashboard, gerenciar serviços/clientes/contratos/usuários
-
-## 🔑 Credenciais de Acesso
-
-### **👤 Usuários Administrativos**
-| Login | Senha | Tipo | Descrição |
-|-------|-------|------|-----------|
-| `admin` | `admin123` | **Administrador** | Acesso total ao sistema |
-| `operador` | `user123` | **Operador** | Acesso às operações básicas |
-
-### **👥 Clientes de Teste**
-| Nome | CPF | Email | Senha | Localização |
-|------|-----|-------|-------|-------------|
-| João Silva Santos | 123.456.789-01 | joao.silva@email.com | `teste123` | Vitória |
-| Maria Oliveira Costa | 234.567.890-12 | maria.oliveira@email.com | `teste123` | Vila Velha |
-
-*Os clientes podem fazer login na área pública ou serem criados dinamicamente no checkout.*
-
-## 📊 Estrutura do Sistema
-
-### **Tecnologias Utilizadas:**
-- **Backend**: PHP 8+ com PDO
-- **Frontend**: HTML5, CSS3, JavaScript (ES6), Bootstrap 5
-- **Banco**: MySQL com relacionamentos otimizados
-- **Arquitetura**: MVC com padrão DAO
-
-### **Principais Recursos:**
-- ✅ Sistema de carrinho sincronizado (localStorage + PHP)
-- ✅ Checkout completo com validações
-- ✅ Dashboard administrativo com estatísticas
-- ✅ Gestão de status de contratos em tempo real
-- ✅ Interface responsiva para todos os dispositivos
-- ✅ Separação clara de responsabilidades (Admin vs Cliente)
-
-## 🎯 Fluxo de Uso Típico
-
-1. **Cliente** acessa a área pública e busca serviços
-2. **Cliente** adiciona serviços ao carrinho e faz checkout
-3. **Administrador** visualiza o novo contrato no painel admin
-4. **Administrador** altera status do contrato conforme andamento
-5. **Cliente** pode acompanhar seus contratos na área pública
-
----
-
-**Sistema pronto para uso!** Basta importar o banco e acessar as URLs indicadas com as credenciais fornecidas.
-- Dados de exemplo (usuários, clientes, serviços)
-- Senhas já configuradas corretamente
-- Suporte para arquitetura dual (admin + público)
-
-### 2. **Estrutura de URLs**
-```
-http://localhost/trabalho/           ← Área Pública
-http://localhost/trabalho/admin/     ← Área Administrativa
-```
-
-### 3. **Configuração** (Padrão XAMPP)
-- Banco: `trabalho_web`
-- Host: `localhost`
-- Usuário: `root` (sem senha)
-
-## 📋 Requisitos do Sistema
-
-- **PHP**: 8.0 ou superior
-- **MySQL**: 5.7 ou superior  
-- **Servidor Web**: Apache (XAMPP recomendado)
-- **Extensões PHP**: PDO, PDO_MySQL, mbstring, json
-
-## 👥 Tipos de Usuários no Sistema
-
-### **📊 Resumo dos Usuários:**
-
-| Tipo | Quantidade | Localização | Características |
-|------|------------|-------------|-----------------|
-| **Administradores** | 1 | `/admin/` | Acesso total ao sistema administrativo |
-| **Operadores** | 1 | `/admin/` | Acesso limitado ao sistema administrativo |
-| **Clientes** | 2 | `/` (público) | Contratação de serviços com login |
-
-### **🔐 Hierarquia de Permissões:**
-
-1. **Admin**: CRUD completo, relatórios, gestão de usuários
-2. **Operador**: Operações básicas, sem gestão de usuários  
-3. **Cliente**: Busca, contratação e acompanhamento de serviços
-
-### **💡 Resposta à Pergunta:**
-**Sim, existem 3 tipos de usuários** baseados nos requisitos:
-- Usuários administrativos (`admin`, `operador`) 
-- Usuários públicos (`clientes`)
-- Sistema dual com autenticação separada
-
-## 🧹 Manutenção do Projeto
-
-### Limpeza Automática de Arquivos de Teste
-
-O projeto inclui scripts automatizados para remover arquivos de teste:
-
-#### **PowerShell** (Recomendado)
-```powershell
-.\cleanup-tests.ps1
-```
-
-#### **Padrões Monitorados:**
-- `teste_*.html` / `teste_*.php`
-- `test_*.html` / `test_*.php`  
-- `*_test.html` / `*_test.php`
-- `debug_*.html` / `debug_*.php`
-- `temp_*.html` / `temp_*.php`
-- `*.tmp` (arquivos temporários)
-- `logs/*debug*` (logs de debug)
-
-#### **Configuração Automática:**
-O arquivo `.gitignore` já exclui automaticamente arquivos de teste do controle de versão.
-
-### Como Usar:
-1. Execute o script quando necessário: `.\cleanup-tests.ps1`
-2. O script remove automaticamente todos os arquivos que seguem os padrões de teste
-3. Logs são exibidos mostrando quais arquivos foram removidos
-
-## �️ Arquitetura do Sistema
-
-### **Estrutura Dual Completa**
 ```
 trabalho/
-├── index.php               ← Página inicial pública
-├── buscar.php             ← Busca de serviços
-├── carrinho.php           ← Carrinho de compras
-├── checkout.php           ← Finalização de compra
-├── login.php              ← Login de clientes
-├── cadastro.php           ← Cadastro de clientes
-├── meus_contratos.php     ← Histórico do cliente
-├── admin/                 ← Área administrativa
-│   ├── index.php         ← Login admin
-│   ├── dashboard.php     ← Painel de controle
-│   ├── logout.php        ← Logout admin
-│   ├── servicos/         ← CRUD de serviços
-│   ├── clientes/         ← CRUD de clientes
-│   ├── usuarios/         ← CRUD de usuários
-│   └── contratacao/      ← Gestão de contratações
-├── dao/                   ← Data Access Objects
-├── config/                ← Configurações
-├── assets/                ← CSS, JS, imagens
-└── logs/                  ← Arquivos de log
+├── index.php                 # Página inicial com seleção de áreas
+├── BD_Tema.sql              # Script do banco de dados
+├── README.md                # Este arquivo
+│
+├── public/                  # 🌐 ÁREA PÚBLICA (Clientes)
+│   ├── index.php           # Portal inicial
+│   ├── buscar.php          # Busca de serviços
+│   ├── carrinho.php        # Carrinho de compras
+│   ├── checkout.php        # Finalização da compra
+│   ├── cadastro.php        # Cadastro de clientes
+│   ├── login.php           # Login de clientes
+│   ├── meus_contratos.php  # Contratos do cliente
+│   ├── detalhes_contrato.php
+│   ├── logout_cliente.php
+│   └── api/                # APIs públicas
+│       ├── get_dates.php   # Datas disponíveis
+│       └── sync_cart.php   # Sincronização do carrinho
+│
+├── admin/                   # ⚙️ ÁREA ADMINISTRATIVA
+│   ├── index.php           # Login administrativo
+│   ├── dashboard.php       # Dashboard principal
+│   ├── logout.php          # Logout admin
+│   ├── usuarios/           # Gestão de usuários
+│   │   ├── form.php
+│   │   └── list.php
+│   ├── clientes/           # Gestão de clientes
+│   │   ├── form.php
+│   │   └── list.php
+│   ├── servicos/           # Gestão de serviços
+│   │   ├── form.php
+│   │   └── list.php
+│   └── contratacao/        # Gestão de contratos
+│       ├── buscar.php
+│       ├── carrinho.js
+│       ├── carrinho.php
+│       ├── confirmar.php
+│       ├── get_dates.php
+│       ├── listar.php
+│       ├── resumo.php
+│       ├── sync_cart.php
+│       └── update_status.php
+│
+├── shared/                  # 📦 RECURSOS COMPARTILHADOS
+│   ├── config/             # Configurações
+│   │   ├── auth.php        # Autenticação
+│   │   └── db.php          # Banco de dados
+│   ├── dao/                # Data Access Objects
+│   │   ├── ClienteDAO.php
+│   │   ├── ContratacaoDAO.php
+│   │   ├── DataDisponivelDAO.php
+│   │   ├── ServicoDAO.php
+│   │   └── UsuarioDAO.php
+│   └── assets/             # CSS, JS, imagens
+│       ├── css/
+│       │   ├── style.css
+│       │   └── datas-disponiveis.css
+│       └── js/
+│           └── util.js
+│
+├── logs/                    # 📋 Logs do sistema
+└── copilot-rules/          # 📝 Regras de desenvolvimento
 ```
 
-### **Funcionalidades por Área**
+## 🚀 Acesso ao Sistema
 
-#### 🌍 **Área Pública** (`/`)
-- ✅ **Página Inicial**: Hero section, busca rápida, destaques
-- ✅ **Busca Avançada**: Filtros por nome, tipo, preço
-- ✅ **Carrinho Inteligente**: JavaScript + LocalStorage + PHP Sessions
-- ✅ **Sistema de Clientes**: Cadastro, login, histórico
-- ✅ **Processo Completo**: Da busca até a contratação finalizada
+### 🌐 Página Inicial
+- **URL:** `http://localhost/trabalho/`
+- **Funcionalidade:** Interface de seleção entre áreas pública e administrativa
 
-#### 🔧 **Área Administrativa** (`/admin/`)
-- ✅ **Dashboard Analítico**: Estatísticas, gráficos, resumos
-- ✅ **CRUD Completo**: Serviços, clientes, usuários
-- ✅ **Gestão de Contratações**: Status, valores, datas
-- ✅ **Controle de Usuários**: Admin e operadores
+### 👥 Área Pública (Clientes)
+- **URL:** `http://localhost/trabalho/public/`
+- **Funcionalidades:** Buscar serviços, cadastro, login, carrinho, contratos
+- **Usuários de teste:**
+  - maria@teste.com / teste123
+  - joao@teste.com / teste123
 
-## 🛒 Sistema de Carrinho Avançado
+### ⚙️ Área Administrativa
+- **URL:** `http://localhost/trabalho/admin/`
+- **Login:** admin / admin123
+- **Funcionalidades:** Gerenciar usuários, clientes, serviços e contratos
 
-### **Tecnologias do Carrinho**
-- **Frontend**: JavaScript ES6 + LocalStorage
-- **Backend**: PHP Sessions + AJAX
-- **Sincronização**: Bi-direcional client-server
-- **Persistência**: Entre sessões e dispositivos
+## 🗄️ Banco de Dados
 
-### **Funcionalidades do Carrinho**
-- ✅ Adicionar/remover serviços dinamicamente
-- ✅ Seleção de datas disponíveis por serviço
-- ✅ Validação de quantidade máxima (5 itens)
-- ✅ Cálculo automático de totais
-- ✅ Sincronização em tempo real
-- ✅ Interface responsiva com Bootstrap 5
+Execute o arquivo `BD_Tema.sql` no MySQL para criar:
+- **Database:** trabalho_web
+- **Usuários padrão:** 
+  - 2 clientes (maria@teste.com, joao@teste.com) - senha: teste123
+  - 1 admin (admin) - senha: admin123  
+  - 1 operador (operador) - senha: op123
 
-## �🎯 Especificações Técnicas
+## 🛠️ Tecnologias Utilizadas
 
-### Tecnologias Utilizadas
-- **Backend**: PHP 8+ (sem frameworks)
-- **Banco de Dados**: MySQL com PDO
-- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript/jQuery
-- **Segurança**: Hash de senhas, CSRF protection, prepared statements
+- **Backend:** PHP 8+, MySQL 8+
+- **Frontend:** Bootstrap 5, jQuery 3.7, JavaScript ES6
+- **Arquitetura:** DAO Pattern, MVC, Sessões PHP + localStorage
+- **Servidor:** Apache (XAMPP)
 
-### Arquitetura
-- **Padrão DAO** para acesso aos dados
-- **Padrão Singleton** para conexão de banco
-- **Separação de responsabilidades** em camadas
-- **Validação client-side e server-side**
+## ⭐ Principais Funcionalidades
 
-## 📋 Funcionalidades Implementadas
+- ✅ **Arquitetura Modular:** Separação clara entre áreas pública, administrativa e recursos compartilhados
+- ✅ **Sistema de Carrinho:** Integração localStorage + sessão PHP com sincronização em tempo real
+- ✅ **Autenticação Dupla:** Sistema diferenciado para clientes e usuários administrativos
+- ✅ **Gestão Completa:** CRUD de contratos, serviços, clientes e usuários
+- ✅ **Interface Responsiva:** Bootstrap 5 com design mobile-first
+- ✅ **APIs REST:** Endpoints para sincronização e dados dinâmicos
 
-### 🔐 **Autenticação Dual**
-- ✅ **Login Admin**: Para usuários administrativos
-- ✅ **Login Cliente**: Para clientes do site público
-- ✅ **Sistema "Lembrar-me"**: Cookies seguros
-- ✅ **Proteção CSRF**: Tokens de segurança
-- ✅ **Hash Seguro**: `password_hash()` com salt
+## 🔄 Reorganização Realizada
 
-### 👥 **Gestão de Usuários**
-- ✅ **CRUD Completo**: Apenas para administradores
-- ✅ **Tipos**: Administrador e Operador
-- ✅ **Status**: Ativo/inativo
-- ✅ **Auditoria**: Último acesso registrado
-- ✅ **Segurança**: Login único, senhas criptografadas
-
-### 👤 **Gestão de Clientes**
-- ✅ **CRUD Completo**: Interface administrativa
-- ✅ **Auto-cadastro**: Clientes podem se registrar
-- ✅ **Validações**: CPF, email único
-- ✅ **Dados Completos**: Nome, CPF, cidade, contato
-- ✅ **Relacionamentos**: Histórico de contratações
-
-### 🛍️ **Gestão de Serviços**
-- ✅ **CRUD Completo**: Interface administrativa
-- ✅ **Categorização**: Tipos (Tecnologia, Marketing, Design, etc.)
-- ✅ **Preços**: Formato monetário brasileiro
-- ✅ **Disponibilidade**: Datas disponíveis por serviço
-- ✅ **Status**: Ativo/inativo
-- ✅ **Busca Pública**: Filtros avançados
-
-### 🛒 **Sistema de Contratação Público**
-- ✅ **Busca Avançada**: Por nome, tipo, faixa de preço
-- ✅ **Carrinho Inteligente**: Máximo 5 itens, persistente
-- ✅ **Seleção de Datas**: Para cada serviço individual
-- ✅ **Cálculo Automático**: Valores e totais em tempo real
-- ✅ **Checkout Completo**: Validação e finalização
-- ✅ **Histórico**: Clientes veem suas contratações
-- [x] **Resumo e confirmação** de pedidos
-- [x] **Transações seguras** com rollback em caso de erro
-- [x] **Controle de estoque** de datas (evita double booking)
-
-### ✅ Dashboard e Interface
-- [x] **Painel principal** com resumo estatístico
-- [x] **Design responsivo** com Bootstrap 5
-- [x] **Navegação intuitiva** com sidebar
-- [x] **Mensagens de feedback** para todas as ações
-- [x] **Validação JavaScript** em tempo real
-- [x] **Carregamento assíncrono** com AJAX
-
-## 🛠️ Estrutura do Projeto
-
-```
-/trabalho/
-├── index.php              # Página de login
-├── BD_Tema.sql           # ⭐ Instalação completa (schema + dados)
-├── config/
-│   ├── db.php             # Configuração do banco (Singleton)
-│   └── auth.php           # Middleware de autenticação
-├── dao/
-│   ├── UsuarioDAO.php     # CRUD de usuários
-│   ├── ClienteDAO.php     # CRUD de clientes
-│   ├── ServicoDAO.php     # CRUD de serviços
-│   ├── DataDisponivelDAO.php # Gestão de datas
-│   └── ContratacaoDAO.php # Sistema de contratação
-├── public/
-│   ├── dashboard.php      # ⭐ Painel principal
-│   └── logout.php         # Logout seguro
-├── usuarios/
-│   ├── list.php          # Listagem de usuários (admin)
-│   └── form.php          # Formulário de usuários
-├── clientes/
-│   ├── list.php          # Listagem de clientes
-│   └── form.php          # Formulário de clientes
-├── servicos/
-│   ├── list.php          # Listagem de serviços
-│   └── form.php          # Formulário de serviços
-├── contratacao/
-│   ├── buscar.php        # ⭐ Busca de serviços
-│   ├── resumo.php        # ⭐ Carrinho de compras
-│   └── confirmar.php     # ⭐ Finalização do pedido
-└── assets/
-    ├── css/style.css     # Estilos customizados
-    └── js/util.js        # Funções JavaScript
-```
-
-## 🛡️ Recursos de Segurança
-
-- **Senhas**: Hash com `password_hash()` e verificação com `password_verify()`
-- **SQL Injection**: Prepared statements em todas as consultas
-- **XSS**: Sanitização com `htmlspecialchars()`
-- **CSRF**: Tokens de segurança em formulários críticos
-- **Sessões**: Regeneração de ID e configuração segura
-- **Cookies**: HttpOnly e Secure flags quando aplicável
-- **Transações**: Rollback automático em caso de erro
-
-## 🔍 Validações Implementadas
-
-### Server-side (PHP)
-- ✅ Campos obrigatórios
-- ✅ Formatos de email e CPF
-- ✅ Tipos de dados numéricos
-- ✅ Limites de caracteres
-- ✅ Unicidade de dados (login, email, CPF)
-- ✅ Validação de relacionamentos
-
-### Client-side (JavaScript)
-- ✅ Validação em tempo real
-- ✅ Formatação automática de CPF
-- ✅ Contadores de caracteres
-- ✅ Masks para campos especiais
-- ✅ Confirmação de ações destrutivas
-
-## 📊 Casos de Borda Tratados
-
-- ✅ **Limite de datas**: Máximo 7 datas por serviço → Bloqueado
-- ✅ **Serviço sem datas**: Alerta exibido durante contratação
-- ✅ **Corrida por mesma data**: Transação com `SELECT FOR UPDATE`
-- ✅ **Carrinho lotado**: Máximo 5 itens → Limite aplicado
-- ✅ **Exclusão com vínculos**: Confirmação obrigatória
-- ✅ **CPF/Email duplicado**: Validação e bloqueio
-- ✅ **Sessão expirada**: Redirecionamento automático para login
-
-## 🎨 Interface e UX
-
-### Design Moderno
-- **Bootstrap 5** para responsividade
-- **Sidebar** responsiva com navegação intuitiva
-- **Cards** informativos no dashboard
-- **Tabelas** com busca e paginação
-- **Formulários** com validação visual
-
-### Experiência do Usuário
-- **Feedbacks visuais** para todas as ações (sucesso/erro)
-- **Loading states** durante operações assíncronas
-- **Confirmações** para ações irreversíveis
-- **Navegação breadcrumb** clara
-- **Responsive design** para mobile
-
-## 🚨 Solução de Problemas
-
-### Erro de Conexão com Banco
-```bash
-# Verificar se MySQL está rodando no XAMPP
-# Verificar credenciais em config/db.php
-# Verificar se o banco 'trabalho_web' existe
-```
-
-### Problema de Login
-```bash
-# Executar novamente o BD_Tema.sql
-mysql -u root < BD_Tema.sql
-
-# Credenciais corretas:
-# admin / admin123
-# operador / user123
-```
-
-### Erro de Permissões
-```bash
-# No Windows (XAMPP):
-# Certifique-se que está na pasta htdocs/trabalho/
-# No Linux:
-chmod -R 755 /caminho/para/trabalho/
-chmod 777 logs/
-```
-
-## � Dados de Exemplo
-
-O sistema já vem configurado com:
-
-### Usuários
-- **Admin**: admin/admin123
-- **Operador**: operador/user123
-
-### Clientes
-- **João Silva**: joao.silva@email.com/teste123 (CPF: 123.456.789-01)
-- **Maria Oliveira**: maria.oliveira@email.com/teste123 (CPF: 234.567.890-12)
-
-### Serviços
-- **Desenvolvimento de Site** (R$ 2.500,00)
-- **Consultoria em Marketing Digital** (R$ 800,00)
-- **Design de Logo e Identidade Visual** (R$ 650,00)
-- **Manutenção de Computadores** (R$ 150,00)
-- **Fotografia de Eventos** (R$ 1.200,00)
-
-### Datas Disponíveis
-- 7 datas para cada serviço (de agosto a novembro de 2025)
-- Prontas para contratação
-
-## 📞 Notas Importantes
-
-1. **Instalação**: Use apenas o arquivo `BD_Tema.sql` - ele contém tudo!
-2. **Credenciais**: Admin (admin/admin123) - Operador (operador/user123)
-3. **Primeiro acesso**: Use a conta admin para gerenciar o sistema
-4. **XAMPP**: Sistema otimizado para ambiente XAMPP padrão
-5. **Segurança**: Senhas já estão com hash correto - não há problemas de login
+Esta versão representa uma **reorganização completa** da estrutura anterior:
+- 📁 **Antes:** Arquivos misturados na raiz
+- 📁 **Depois:** Estrutura organizada em `public/`, `admin/`, `shared/`
+- 🔧 **Benefícios:** Maior escalabilidade, manutenibilidade e separação de responsabilidades
 
 ---
-
-## � Últimas Atualizações
-
-### **v2.0 - Arquitetura Dual (27/07/2025)**
-- ✅ **Estrutura Reorganizada**: Área pública na raiz (`/`) e admin em (`/admin/`)
-- ✅ **Página Inicial Pública**: Design moderno com hero section e busca rápida
-- ✅ **Sistema de Carrinho Completo**: JavaScript + LocalStorage + PHP Sessions
-- ✅ **Checkout Público**: Processo completo de contratação para clientes
-- ✅ **Banco Atualizado**: `BD_Tema.sql` compatível com todas as funcionalidades
-- ✅ **URLs Amigáveis**: Estrutura limpa e intuitiva
-- ✅ **Correções de Paths**: Todos os caminhos e links atualizados
-- ✅ **APIs Públicas**: `get_dates.php` e `sync_cart.php` acessíveis sem autenticação admin
-
-### **Melhorias de Segurança**
-- ✅ **Headers de Segurança**: `.htaccess` configurado
-- ✅ **Validação Robusta**: Client-side + server-side
-- ✅ **Autenticação Separada**: Admin e clientes independentes
-
-## �🏆 Destaques Técnicos
-
-- 🔒 **100% seguro**: Prepared statements, CSRF, hash de senhas
-- 🎯 **Arquitetura limpa**: DAO pattern, separation of concerns
-- 📱 **Totalmente responsivo**: Bootstrap 5 mobile-first
-- ⚡ **Performance**: Singleton connection, índices otimizados
-- 🛡️ **Validação dupla**: Client-side + server-side
-- 🏗️ **Arquitetura Dual**: Interface pública + administrativa
-
-## 🚀 Próximas Funcionalidades
-- [ ] Sistema de avaliações e comentários
-- [ ] Notificações por email
-- [ ] Chat online entre cliente e prestador
-- [ ] API REST para integração mobile
-- [ ] Dashboard analytics avançado
-
-*Sistema desenvolvido seguindo as melhores práticas de desenvolvimento web e segurança, sem frameworks, conforme especificado.*
-
+*Sistema reorganizado com arquitetura modular e escalável*

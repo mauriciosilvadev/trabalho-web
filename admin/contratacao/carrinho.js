@@ -73,7 +73,7 @@ function syncCartWithSession() {
         syncUrl = 'sync_cart.php';
     } else {
         // Estamos na área pública
-        syncUrl = 'sync_cart.php';
+        syncUrl = 'api/sync_cart.php';
     }
     
     $.ajax({
@@ -246,7 +246,7 @@ function showDateSelectionModal(serviceId, serviceName) {
         getDateUrl = 'get_dates.php';
     } else {
         // Estamos na área pública
-        getDateUrl = 'get_dates.php';
+        getDateUrl = 'api/get_dates.php';
     }
     
     // Load available dates via AJAX

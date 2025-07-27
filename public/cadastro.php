@@ -7,7 +7,7 @@
 
 session_start();
 
-require_once 'dao/ClienteDAO.php';
+require_once '../shared/dao/ClienteDAO.php';
 
 $clienteDAO = new ClienteDAO();
 $errors = [];
@@ -118,7 +118,7 @@ function isValidCPF($cpf)
     <title>Cadastre-se - Sistema de Serviços</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
+    <link href="../shared/assets/css/style.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
@@ -136,7 +136,7 @@ function isValidCPF($cpf)
                 <a class="nav-link" href="login.php">
                     <i class="bi bi-box-arrow-in-right"></i> Login
                 </a>
-                <a class="nav-link" href="admin/">
+                <a class="nav-link" href="../admin/">
                     <i class="bi bi-gear"></i> Admin
                 </a>
             </div>
@@ -277,7 +277,7 @@ function isValidCPF($cpf)
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/util.js"></script>
+    <script src="../shared/assets/js/util.js"></script>
     <script>
         // Format CPF input
         $('#cpf').on('input', function() {

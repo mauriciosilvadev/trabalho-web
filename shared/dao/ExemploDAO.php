@@ -1,6 +1,6 @@
 <?php
 
-require_once 'conexao.inc.php';
+require_once __DIR__ . '/../config/db.php';
 
 class ClienteDAO
 {

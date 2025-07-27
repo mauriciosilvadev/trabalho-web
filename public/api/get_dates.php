@@ -5,7 +5,7 @@
  * Não requer autenticação para permitir que clientes vejam datas
  */
 
-require_once 'dao/DataDisponivelDAO.php';
+require_once '../../shared/dao/DataDisponivelDAO.php';
 
 header('Content-Type: application/json');
 

@@ -3,7 +3,7 @@
 /**
  * Sincronização do carrinho com sessões PHP
  */
-require_once '../../config/auth.php';
+require_once '../../shared/config/auth.php';
 
 Auth::requireAuth();
 
