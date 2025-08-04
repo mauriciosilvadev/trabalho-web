@@ -79,6 +79,11 @@ $csrfToken = Auth::generateCSRFToken();
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            <i class="bi bi-graph-up"></i> Relatórios Financeiros
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link active" href="list.php">
                             <i class="bi bi-person-gear"></i> Usuários
                         </a>
@@ -197,7 +202,7 @@ $csrfToken = Auth::generateCSRFToken();
                         </thead>
                         <tbody>
                             <?php foreach ($usuarios as $usuario): ?>
-                                <tr>
+                                <tr data-user-id="<?= $usuario['id'] ?>">
                                     <td>
                                         <strong><?= htmlspecialchars($usuario['nome']) ?></strong>
                                         <?php if ($usuario['id'] == $user['id']): ?>
@@ -218,7 +223,7 @@ $csrfToken = Auth::generateCSRFToken();
                                             <?= date('d/m/Y H:i', strtotime($usuario['criado_em'])) ?>
                                         </small>
                                     </td>
-                                    <td>
+                                    <td class="last-access-cell">
                                         <?php if ($usuario['ultimo_acesso']): ?>
                                             <small class="text-muted">
                                                 <?= date('d/m/Y H:i', strtotime($usuario['ultimo_acesso'])) ?>
@@ -370,6 +375,42 @@ $csrfToken = Auth::generateCSRFToken();
             setTimeout(function() {
                 $('.alert').fadeOut();
             }, 5000);
+
+            // Real-time last access updates
+            function updateLastAccess() {
+                $.ajax({
+                    url: 'get_last_access.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.success) {
+                            data.users.forEach(function(user) {
+                                const row = $('tr[data-user-id="' + user.id + '"]');
+                                const lastAccessCell = row.find('.last-access-cell');
+                                
+                                if (user.ultimo_acesso) {
+                                    const formattedDate = new Date(user.ultimo_acesso).toLocaleString('pt-BR', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+                                    lastAccessCell.html('<small class="text-muted">' + formattedDate + '</small>');
+                                } else {
+                                    lastAccessCell.html('<small class="text-muted">Nunca</small>');
+                                }
+                            });
+                        }
+                    },
+                    error: function() {
+                        console.log('Erro ao atualizar último acesso');
+                    }
+                });
+            }
+
+            // Update every 30 seconds
+            setInterval(updateLastAccess, 30000);
         });
     </script>
 </body>

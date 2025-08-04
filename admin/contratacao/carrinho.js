@@ -35,6 +35,8 @@ function loadCart() {
         const storedCart = localStorage.getItem('service_cart');
         if (storedCart) {
             cart = JSON.parse(storedCart);
+            // Recalcular total ao carregar
+            cart.total = cart.items.reduce((sum, item) => sum + (item.price || 0), 0);
         }
         
         // Sync with PHP session if needed
@@ -50,6 +52,8 @@ function loadCart() {
  */
 function saveCart() {
     try {
+        // Recalcular total antes de salvar
+        cart.total = cart.items.reduce((sum, item) => sum + (item.price || 0), 0);
         localStorage.setItem('service_cart', JSON.stringify(cart));
         updateCartDisplay();
         
@@ -167,8 +171,6 @@ function handleAddToCart(e) {
     };
     
     cart.items.push(newItem);
-    cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
-    
     saveCart();
     
     // Update button state
@@ -186,8 +188,6 @@ function handleRemoveFromCart(e) {
     
     const serviceId = parseInt($(this).data('service-id'));
     cart.items = cart.items.filter(item => item.serviceId !== serviceId);
-    cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
-    
     saveCart();
     
     // Re-enable add to cart button if on search page
@@ -334,7 +334,6 @@ function displayDateModal(serviceId, serviceName, dates) {
         if (cartItem && !cartItem.selectedDate) {
             // Remove item from cart if no date was selected
             cart.items = cart.items.filter(item => item.serviceId !== serviceId);
-            cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
             saveCart();
             
             // Re-enable add to cart button
@@ -360,6 +359,7 @@ function updateCartDisplay() {
     
     // Update cart total
     $('.cart-total').text(formatCurrency(cartTotal));
+    $('#cart-total').text(formatCurrency(cartTotal));
     
     // Show/hide cart button
     if (cartCount > 0) {
@@ -429,6 +429,10 @@ function displayCartItems() {
         container.append(itemHtml);
     });
     
+    // Update cart count and total
+    $('#cart-count').text(cart.items.length);
+    $('#cart-total').text(formatCurrency(cart.total));
+    
     // Show/hide checkout button
     const allDatesSelected = cart.items.every(item => item.selectedDate !== null);
     $('#proceedToCheckout').prop('disabled', !allDatesSelected);
@@ -457,6 +461,8 @@ function showEmptyCart() {
     
     $('#proceedToCheckout').prop('disabled', true);
     $('#checkout-warning').hide();
+    $('#cart-count').text('0');
+    $('#cart-total').text('R$ 0,00');
 }
 
 /**
@@ -511,7 +517,8 @@ function proceedToCheckout() {
     if (currentPath.includes('/public/')) {
         window.location.href = 'checkout.php';
     } else {
-        window.location.href = '../public/checkout.php';
+        // Estamos na área admin, redirecionar para a pasta public
+        window.location.href = '../../public/checkout.php';
     }
 }
 
@@ -574,8 +581,10 @@ function updateCartTotal() {
         total += item.price || 0;
     });
     
+    cart.total = total;
     const formattedTotal = 'R$ ' + total.toFixed(2).replace('.', ',');
     $('.cart-total').text(formattedTotal);
+    $('#cart-total').text(formattedTotal);
     
     return total;
 }
@@ -587,6 +596,7 @@ function updateCartCount() {
     const count = cart.items.length;
     $('.cart-count').text(count);
     $('.cart-badge').text(count);
+    $('#cart-count').text(count);
     
     // Hide/show cart count badge
     if (count > 0) {

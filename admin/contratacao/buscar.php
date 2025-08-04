@@ -72,8 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET)) {
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="buscar.php">
-                            <i class="bi bi-search"></i> Buscar/Contratar
+                        <a class="nav-link" href="listar.php">
+                            <i class="bi bi-file-earmark-text"></i> Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            <i class="bi bi-graph-up"></i> Relatórios Financeiros
                         </a>
                     </li>
                     <li class="nav-item">

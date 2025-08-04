@@ -402,4 +402,18 @@ class UsuarioDAO
             return false;
         }
     }
+
+    /**
+     * Update last access time for user
+     */
+    public function updateLastAccess(int $userId): bool
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE usuarios SET ultimo_acesso = NOW() WHERE id = ?");
+            return $stmt->execute([$userId]);
+        } catch (PDOException $e) {
+            error_log("Error updating last access: " . $e->getMessage());
+            return false;
+        }
+    }
 }

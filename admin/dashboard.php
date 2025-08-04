@@ -65,13 +65,18 @@ $user = Auth::getUser();
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="relatorios/financeiro.php">
+                            <i class="bi bi-graph-up"></i> Relatórios Financeiros
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="usuarios/list.php">
                             <i class="bi bi-person-gear"></i> Usuários
                         </a>
                     </li>
                 </ul>
 
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($user['nome']) ?>
@@ -99,40 +104,60 @@ $user = Auth::getUser();
         <!-- Statistics Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card stats-card dashboard-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-people" style="font-size: 2rem;"></i>
-                        <div class="stats-number"><?= $totalClientes ?></div>
-                        <div class="stats-label">Clientes</div>
+                <a href="clientes/list.php" class="text-decoration-none">
+                    <div class="card stats-card dashboard-card clickable-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people" style="font-size: 2rem;"></i>
+                            <div class="stats-number"><?= $totalClientes ?></div>
+                            <div class="stats-label">Clientes</div>
+                            <div class="card-hint">
+                                <small><i class="bi bi-arrow-right"></i> Clique para ver todos os clientes</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="card stats-card dashboard-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-list-task" style="font-size: 2rem;"></i>
-                        <div class="stats-number"><?= $totalServicos ?></div>
-                        <div class="stats-label">Serviços</div>
+                <a href="servicos/list.php" class="text-decoration-none">
+                    <div class="card stats-card dashboard-card clickable-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-list-task" style="font-size: 2rem;"></i>
+                            <div class="stats-number"><?= $totalServicos ?></div>
+                            <div class="stats-label">Serviços</div>
+                            <div class="card-hint">
+                                <small><i class="bi bi-arrow-right"></i> Clique para ver todos os serviços</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="card stats-card dashboard-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-file-earmark-check" style="font-size: 2rem;"></i>
-                        <div class="stats-number"><?= $estatisticas['total_contratos'] ?? 0 ?></div>
-                        <div class="stats-label">Contratos</div>
+                <a href="contratacao/listar.php" class="text-decoration-none">
+                    <div class="card stats-card dashboard-card clickable-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-earmark-check" style="font-size: 2rem;"></i>
+                            <div class="stats-number"><?= $estatisticas['total_contratos'] ?? 0 ?></div>
+                            <div class="stats-label">Contratos</div>
+                            <div class="card-hint">
+                                <small><i class="bi bi-arrow-right"></i> Clique para ver todos os contratos</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-3">
-                <div class="card stats-card dashboard-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
-                        <div class="stats-number">R$ <?= number_format($estatisticas['receita_total'] ?? 0, 2, ',', '.') ?></div>
-                        <div class="stats-label">Receita Total</div>
+                <a href="relatorios/financeiro.php" class="text-decoration-none">
+                    <div class="card stats-card dashboard-card clickable-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
+                            <div class="stats-number">R$ <?= number_format($estatisticas['receita_total'] ?? 0, 2, ',', '.') ?></div>
+                            <div class="stats-label">Receita Total</div>
+                            <div class="card-hint">
+                                <small><i class="bi bi-arrow-right"></i> Clique para ver relatórios financeiros</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
 

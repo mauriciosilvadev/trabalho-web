@@ -23,6 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $messageType = 'danger';
     }
 }
+
+// Handle success message from form submission
+if (isset($_GET['message'])) {
+    $message = $_GET['message'];
+    $messageType = 'success';
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -68,6 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <li class="nav-item">
                         <a class="nav-link" href="../contratacao/listar.php">
                             <i class="bi bi-file-earmark-text"></i> Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            <i class="bi bi-graph-up"></i> Relatórios Financeiros
                         </a>
                     </li>
                     <li class="nav-item">
@@ -223,6 +234,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             document.getElementById('deleteId').value = id;
             new bootstrap.Modal(document.getElementById('deleteModal')).show();
         }
+
+
     </script>
 </body>
 

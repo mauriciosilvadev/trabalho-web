@@ -185,6 +185,11 @@ $tipos = $servicoDAO->getTypes();
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            Relatórios Financeiros
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="../usuarios/list.php">
                             <i class="bi bi-person-gear"></i> Usuários
                         </a>
@@ -359,7 +364,7 @@ $tipos = $servicoDAO->getTypes();
                                 <a href="list.php" class="btn btn-secondary me-md-2">Cancelar</a>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-<?= $isEdit ? 'check' : 'plus' ?>-circle"></i>
-                                    <?= $isEdit ? 'Atualizar' : 'Criar' ?> Serviço
+                                    <?= $isEdit ? 'Atualizar Serviço' : 'Criar Novo Serviço' ?>
                                 </button>
                             </div>
                         </form>
@@ -539,6 +544,8 @@ $tipos = $servicoDAO->getTypes();
 
             // Inicializar contador
             atualizarContadorDatas();
+
+
         });
     </script>
 </body>

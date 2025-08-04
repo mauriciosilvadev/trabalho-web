@@ -69,6 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            <i class="bi bi-graph-up"></i> Relatórios Financeiros
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="../usuarios/list.php">
                             <i class="bi bi-person-gear"></i> Usuários
                         </a>

@@ -37,44 +37,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $senha = $_POST['senha'] ?? '';
         $confirmarSenha = $_POST['confirmar_senha'] ?? '';
         $tipo = $_POST['tipo'] ?? 'operador';
-        $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-        // Validation
+        // Validation - Nome Completo (apenas letras e espaços)
         if (empty($nome)) {
-            $errors[] = 'Nome é obrigatório.';
+            $errors[] = 'Nome completo é obrigatório.';
+        } elseif (!preg_match('/^[a-zA-ZÀ-ÿ\s]{2,100}$/', $nome)) {
+            $errors[] = 'Nome deve conter apenas letras e espaços, entre 2 e 100 caracteres.';
         }
 
+        // Validation - Login
         if (empty($login)) {
             $errors[] = 'Login é obrigatório.';
         } elseif (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $login)) {
-            $errors[] = 'Login deve ter entre 3 e 20 caracteres, apenas letras, números e underscore.';
+            $errors[] = 'Login deve ter entre 3 e 20 caracteres, apenas letras, números e underscore (_).';
         } elseif ($usuarioDAO->loginExists($login, $isEdit ? $id : null)) {
             $errors[] = 'Login já está em uso.';
         }
 
+        // Validation - Email
         if (empty($email)) {
             $errors[] = 'Email é obrigatório.';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Email inválido.';
+            $errors[] = 'Formato de email inválido. Use um email válido (ex: usuario@dominio.com).';
         } elseif ($usuarioDAO->emailExists($email, $isEdit ? $id : null)) {
             $errors[] = 'Email já está em uso.';
         }
 
-        // Password validation
+        // Password validation - Mais rigorosa
         if (!$isEdit) {
             // Creating new user - password required
             if (empty($senha)) {
                 $errors[] = 'Senha é obrigatória.';
-            } elseif (strlen($senha) < 6) {
-                $errors[] = 'Senha deve ter pelo menos 6 caracteres.';
+            } elseif (strlen($senha) < 8) {
+                $errors[] = 'Senha deve ter pelo menos 8 caracteres.';
+            } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $senha)) {
+                $errors[] = 'Senha deve conter: mínimo 8 caracteres, 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial (@$!%*?&).';
             } elseif ($senha !== $confirmarSenha) {
                 $errors[] = 'Confirmação de senha não confere.';
             }
         } else {
             // Editing user - password optional
             if (!empty($senha)) {
-                if (strlen($senha) < 6) {
-                    $errors[] = 'Senha deve ter pelo menos 6 caracteres.';
+                if (strlen($senha) < 8) {
+                    $errors[] = 'Senha deve ter pelo menos 8 caracteres.';
+                } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $senha)) {
+                    $errors[] = 'Senha deve conter: mínimo 8 caracteres, 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial (@$!%*?&).';
                 } elseif ($senha !== $confirmarSenha) {
                     $errors[] = 'Confirmação de senha não confere.';
                 }
@@ -91,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'login' => $login,
                 'email' => $email,
                 'tipo' => $tipo,
-                'ativo' => $ativo
+                'ativo' => 1 // Sempre ativo por padrão
             ];
 
             // Only update password if provided
@@ -128,6 +135,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../../shared/assets/css/style.css">
+    <style>
+        .form-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        .requirement i {
+            margin-right: 0.5rem;
+            font-size: 0.75rem;
+        }
+        .requirement.met {
+            color: #198754;
+        }
+        .requirement.not-met {
+            color: #dc3545;
+        }
+    </style>
 </head>
 
 <body>
@@ -162,6 +196,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li class="nav-item">
                         <a class="nav-link" href="../contratacao/listar.php">
                             <i class="bi bi-file-earmark-text"></i> Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            Relatórios Financeiros
                         </a>
                     </li>
                     <li class="nav-item">
@@ -224,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="">
+                        <form method="POST" action="" id="userForm">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
                             <div class="row">
@@ -233,7 +272,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <label for="nome" class="form-label">Nome Completo *</label>
                                         <input type="text" class="form-control" id="nome" name="nome"
                                             value="<?= htmlspecialchars($usuario['nome'] ?? $_POST['nome'] ?? '') ?>"
-                                            required maxlength="100">
+                                            required maxlength="100" pattern="[a-zA-ZÀ-ÿ\s]{2,100}">
+                                        <div class="form-text">Apenas letras e espaços, entre 2 e 100 caracteres</div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -242,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <input type="text" class="form-control" id="login" name="login"
                                             value="<?= htmlspecialchars($usuario['login'] ?? $_POST['login'] ?? '') ?>"
                                             required maxlength="20" pattern="[a-zA-Z0-9_]{3,20}">
-                                        <div class="form-text">3-20 caracteres: letras, números e _</div>
+                                        <div class="form-text">3-20 caracteres: letras, números e underscore (_)</div>
                                     </div>
                                 </div>
                             </div>
@@ -254,6 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <input type="email" class="form-control" id="email" name="email"
                                             value="<?= htmlspecialchars($usuario['email'] ?? $_POST['email'] ?? '') ?>"
                                             required maxlength="100">
+                                        <div class="form-text">Formato válido: usuario@dominio.com</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -278,8 +319,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             Senha <?= $isEdit ? '(deixe em branco para manter atual)' : '*' ?>
                                         </label>
                                         <input type="password" class="form-control" id="senha" name="senha"
-                                            minlength="6" <?= !$isEdit ? 'required' : '' ?>>
-                                        <div class="form-text">Mínimo 6 caracteres</div>
+                                            minlength="8" <?= !$isEdit ? 'required' : '' ?>>
+                                        <div class="password-requirements">
+                                            <div class="requirement" id="req-length">
+                                                <i class="bi bi-circle"></i> Mínimo 8 caracteres
+                                            </div>
+                                            <div class="requirement" id="req-uppercase">
+                                                <i class="bi bi-circle"></i> 1 letra maiúscula
+                                            </div>
+                                            <div class="requirement" id="req-lowercase">
+                                                <i class="bi bi-circle"></i> 1 letra minúscula
+                                            </div>
+                                            <div class="requirement" id="req-number">
+                                                <i class="bi bi-circle"></i> 1 número
+                                            </div>
+                                            <div class="requirement" id="req-special">
+                                                <i class="bi bi-circle"></i> 1 caractere especial (@$!%*?&)
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -288,18 +345,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             Confirmar Senha <?= $isEdit ? '' : '*' ?>
                                         </label>
                                         <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha"
-                                            minlength="6" <?= !$isEdit ? 'required' : '' ?>>
+                                            minlength="8" <?= !$isEdit ? 'required' : '' ?>>
+                                        <div class="form-text" id="password-match">As senhas devem ser iguais</div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="ativo" name="ativo"
-                                        <?= ($usuario['ativo'] ?? 1) ? 'checked' : '' ?>>
-                                    <label class="form-check-label" for="ativo">
-                                        Usuário ativo (pode fazer login no sistema)
-                                    </label>
                                 </div>
                             </div>
 
@@ -326,15 +374,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/util.js"></script>
     <script>
         $(document).ready(function() {
-            // Password confirmation validation
-            $('#confirmar_senha').on('input', function() {
-                const senha = $('#senha').val();
-                const confirmarSenha = $(this).val();
-
-                if (confirmarSenha && senha !== confirmarSenha) {
+            // Nome validation - apenas letras e espaços
+            $('#nome').on('input', function() {
+                const nome = $(this).val();
+                const pattern = /^[a-zA-ZÀ-ÿ\s]{2,100}$/;
+                
+                if (nome && !pattern.test(nome)) {
                     $(this).addClass('is-invalid');
                 } else {
                     $(this).removeClass('is-invalid');
@@ -345,7 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $('#login').on('input', function() {
                 const login = $(this).val();
                 const pattern = /^[a-zA-Z0-9_]{3,20}$/;
-
+                
                 if (login && !pattern.test(login)) {
                     $(this).addClass('is-invalid');
                 } else {
@@ -356,22 +403,117 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Email validation
             $('#email').on('blur', function() {
                 const email = $(this).val();
-                if (email && !isValidEmail(email)) {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (email && !emailPattern.test(email)) {
                     $(this).addClass('is-invalid');
                 } else {
                     $(this).removeClass('is-invalid');
                 }
             });
 
-            // Password strength indicator
+            // Password strength validation
             $('#senha').on('input', function() {
                 const senha = $(this).val();
-                if (senha.length >= 6) {
-                    $(this).removeClass('is-invalid').addClass('is-valid');
-                } else if (senha.length > 0) {
-                    $(this).removeClass('is-valid').addClass('is-invalid');
+                
+                // Verificar cada requisito
+                const hasLength = senha.length >= 8;
+                const hasUppercase = /[A-Z]/.test(senha);
+                const hasLowercase = /[a-z]/.test(senha);
+                const hasNumber = /\d/.test(senha);
+                const hasSpecial = /[@$!%*?&]/.test(senha);
+                
+                // Atualizar indicadores visuais
+                updateRequirement('req-length', hasLength);
+                updateRequirement('req-uppercase', hasUppercase);
+                updateRequirement('req-lowercase', hasLowercase);
+                updateRequirement('req-number', hasNumber);
+                updateRequirement('req-special', hasSpecial);
+                
+                // Validar confirmação de senha
+                validatePasswordMatch();
+            });
+
+            // Password confirmation validation
+            $('#confirmar_senha').on('input', function() {
+                validatePasswordMatch();
+            });
+
+            function updateRequirement(elementId, isMet) {
+                const element = $('#' + elementId);
+                const icon = element.find('i');
+                
+                if (isMet) {
+                    element.removeClass('not-met').addClass('met');
+                    icon.removeClass('bi-circle').addClass('bi-check-circle-fill');
                 } else {
-                    $(this).removeClass('is-valid is-invalid');
+                    element.removeClass('met').addClass('not-met');
+                    icon.removeClass('bi-check-circle-fill').addClass('bi-circle');
+                }
+            }
+
+            function validatePasswordMatch() {
+                const senha = $('#senha').val();
+                const confirmarSenha = $('#confirmar_senha').val();
+                const matchElement = $('#password-match');
+                
+                if (confirmarSenha && senha !== confirmarSenha) {
+                    $('#confirmar_senha').addClass('is-invalid');
+                    matchElement.text('As senhas não coincidem').removeClass('text-success').addClass('text-danger');
+                } else if (confirmarSenha && senha === confirmarSenha) {
+                    $('#confirmar_senha').removeClass('is-invalid').addClass('is-valid');
+                    matchElement.text('Senhas coincidem').removeClass('text-danger').addClass('text-success');
+                } else {
+                    $('#confirmar_senha').removeClass('is-invalid is-valid');
+                    matchElement.text('As senhas devem ser iguais').removeClass('text-success text-danger');
+                }
+            }
+
+            // Form validation before submit
+            $('#userForm').on('submit', function(e) {
+                let isValid = true;
+                
+                // Validar nome
+                const nome = $('#nome').val();
+                if (!nome || !/^[a-zA-ZÀ-ÿ\s]{2,100}$/.test(nome)) {
+                    $('#nome').addClass('is-invalid');
+                    isValid = false;
+                }
+                
+                // Validar login
+                const login = $('#login').val();
+                if (!login || !/^[a-zA-Z0-9_]{3,20}$/.test(login)) {
+                    $('#login').addClass('is-invalid');
+                    isValid = false;
+                }
+                
+                // Validar email
+                const email = $('#email').val();
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    $('#email').addClass('is-invalid');
+                    isValid = false;
+                }
+                
+                // Validar senha se for criação ou se foi preenchida
+                const senha = $('#senha').val();
+                const confirmarSenha = $('#confirmar_senha').val();
+                const isEdit = <?= $isEdit ? 'true' : 'false' ?>;
+                
+                if (!isEdit || senha) {
+                    if (!senha || senha.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(senha)) {
+                        $('#senha').addClass('is-invalid');
+                        isValid = false;
+                    }
+                    
+                    if (!confirmarSenha || senha !== confirmarSenha) {
+                        $('#confirmar_senha').addClass('is-invalid');
+                        isValid = false;
+                    }
+                }
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Por favor, corrija os erros no formulário antes de continuar.');
                 }
             });
         });

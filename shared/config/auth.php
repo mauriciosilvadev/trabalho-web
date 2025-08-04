@@ -7,9 +7,6 @@ class Auth
 {
     private static $sessionStarted = false;
 
-    /**
-     * Start session if not already started
-     */
     public static function startSession(): void
     {
         if (!self::$sessionStarted && session_status() === PHP_SESSION_NONE) {
@@ -18,27 +15,16 @@ class Auth
         }
     }
 
-    /**
-     * Check if user is authenticated
-     */
     public static function isAuthenticated(): bool
     {
         self::startSession();
         return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
     }
-
-    /**
-     * Get current authenticated user ID
-     */
     public static function getUserId(): ?int
     {
         self::startSession();
         return $_SESSION['user_id'] ?? null;
     }
-
-    /**
-     * Get current authenticated user data
-     */
     public static function getUser(): ?array
     {
         self::startSession();
@@ -53,6 +39,15 @@ class Auth
         self::startSession();
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user'] = $user;
+
+        // Update last access time
+        try {
+            require_once __DIR__ . '/../dao/UsuarioDAO.php';
+            $userDAO = new UsuarioDAO();
+            $userDAO->updateLastAccess($user['id']);
+        } catch (Exception $e) {
+            error_log("Failed to update last access: " . $e->getMessage());
+        }
 
         if ($remember) {
             self::setRememberToken($user['id']);
@@ -97,10 +92,6 @@ class Auth
 
         session_destroy();
     }
-
-    /**
-     * Set remember token for user
-     */
     private static function setRememberToken(int $userId): void
     {
         $token = bin2hex(random_bytes(32));
@@ -118,9 +109,6 @@ class Auth
         }
     }
 
-    /**
-     * Clear remember token for user
-     */
     private static function clearRememberToken(int $userId): void
     {
         try {
@@ -131,10 +119,6 @@ class Auth
             error_log("Failed to clear remember token: " . $e->getMessage());
         }
     }
-
-    /**
-     * Check remember token and auto-login
-     */
     public static function checkRememberToken(): void
     {
         if (self::isAuthenticated() || !isset($_COOKIE['remember_token'])) {
@@ -159,23 +143,16 @@ class Auth
             error_log("Failed to check remember token: " . $e->getMessage());
         }
     }
-
-    /**
-     * Require authentication, redirect to login if not authenticated
-     */
     public static function requireAuth(): void
     {
         self::checkRememberToken();
 
         if (!self::isAuthenticated()) {
-            header('Location: /trabalho/index.php');
+            header('Location: index.php');
             exit;
         }
     }
 
-    /**
-     * Generate CSRF token
-     */
     public static function generateCSRFToken(): string
     {
         self::startSession();
@@ -185,9 +162,6 @@ class Auth
         return $_SESSION['csrf_token'];
     }
 
-    /**
-     * Verify CSRF token
-     */
     public static function verifyCSRFToken(string $token): bool
     {
         self::startSession();
