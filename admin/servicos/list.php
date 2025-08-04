@@ -108,11 +108,14 @@ if (isset($_GET['message'])) {
     <div class="container mt-4">
         <!-- Header -->
         <div class="row mb-4">
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <h1>Gerenciar Serviços</h1>
                 <p class="text-muted">Cadastre, edite e gerencie os serviços disponíveis</p>
             </div>
-            <div class="col-md-4 text-end">
+            <div class="col-md-6 text-end">
+                <a href="../dashboard.php" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
                 <a href="form.php" class="btn btn-primary">
                     <i class="bi bi-plus"></i> Novo Serviço
                 </a>

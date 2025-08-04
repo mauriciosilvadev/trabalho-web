@@ -11,6 +11,9 @@ $cliente = null;
 $isEdit = false;
 $errors = [];
 
+// Detectar origem da navegação
+$fromDashboard = isset($_GET['from']) && $_GET['from'] === 'dashboard';
+
 // Check if editing
 if (isset($_GET['id'])) {
     $id = (int) $_GET['id'];
@@ -83,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($success) {
+                // Sempre redirecionar para a listagem de clientes após criar/editar
                 header('Location: list.php?message=' . urlencode($message));
                 exit;
             } else {
@@ -209,7 +213,7 @@ function isValidCPF($cpf)
                 <p class="text-muted"><?= $isEdit ? 'Edite as informações do cliente' : 'Preencha os dados do novo cliente' ?></p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="list.php" class="btn btn-secondary">
+                <a href="<?= $fromDashboard ? '../dashboard.php' : 'list.php' ?>" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -293,7 +297,7 @@ function isValidCPF($cpf)
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="list.php" class="btn btn-secondary me-md-2">Cancelar</a>
+                                <a href="<?= $fromDashboard ? '../dashboard.php' : 'list.php' ?>" class="btn btn-secondary me-md-2">Cancelar</a>
                                 <button type="submit" class="btn btn-success">
                                     <i class="bi bi-<?= $isEdit ? 'check' : 'person-plus' ?>"></i>
                                     <?= $isEdit ? 'Atualizar' : 'Criar' ?> Cliente
@@ -352,7 +356,6 @@ function isValidCPF($cpf)
                     $(this).removeClass('is-invalid');
                 }
             });
-
 
         });
     </script>
