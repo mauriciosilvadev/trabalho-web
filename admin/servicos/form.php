@@ -14,6 +14,9 @@ $datasExistentes = [];
 $isEdit = false;
 $errors = [];
 
+// Detectar origem da navegação
+$fromDashboard = isset($_GET['from']) && $_GET['from'] === 'dashboard';
+
 // Check if editing
 if (isset($_GET['id'])) {
     $id = (int) $_GET['id'];
@@ -121,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 if ($success) {
+                    // Sempre redirecionar para a listagem de serviços após criar/editar
                     header('Location: list.php?message=' . urlencode($message));
                     exit;
                 } else {
@@ -221,7 +225,7 @@ $tipos = $servicoDAO->getTypes();
                 <p class="text-muted"><?= $isEdit ? 'Edite as informações do serviço' : 'Preencha os dados do novo serviço' ?></p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="list.php" class="btn btn-secondary">
+                <a href="<?= $fromDashboard ? '../dashboard.php' : 'list.php' ?>" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -361,7 +365,7 @@ $tipos = $servicoDAO->getTypes();
                             </div>
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="list.php" class="btn btn-secondary me-md-2">Cancelar</a>
+                                <a href="<?= $fromDashboard ? '../dashboard.php' : 'list.php' ?>" class="btn btn-secondary me-md-2">Cancelar</a>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-<?= $isEdit ? 'check' : 'plus' ?>-circle"></i>
                                     <?= $isEdit ? 'Atualizar Serviço' : 'Criar Novo Serviço' ?>
@@ -544,7 +548,6 @@ $tipos = $servicoDAO->getTypes();
 
             // Inicializar contador
             atualizarContadorDatas();
-
 
         });
     </script>

@@ -175,7 +175,7 @@ $user = Auth::getUser();
                         <i class="bi bi-plus-circle text-primary" style="font-size: 3rem;"></i>
                         <h5 class="card-title mt-3">Novo Serviço</h5>
                         <p class="card-text">Cadastrar um novo serviço no sistema</p>
-                        <a href="servicos/form.php" class="btn btn-primary">
+                        <a href="servicos/form.php?from=dashboard" class="btn btn-primary">
                             <i class="bi bi-plus"></i> Criar Serviço
                         </a>
                     </div>
@@ -187,7 +187,7 @@ $user = Auth::getUser();
                         <i class="bi bi-person-plus text-success" style="font-size: 3rem;"></i>
                         <h5 class="card-title mt-3">Novo Cliente</h5>
                         <p class="card-text">Cadastrar um novo cliente no sistema</p>
-                        <a href="clientes/form.php" class="btn btn-success">
+                        <a href="clientes/form.php?from=dashboard" class="btn btn-success">
                             <i class="bi bi-plus"></i> Criar Cliente
                         </a>
                     </div>

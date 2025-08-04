@@ -100,11 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <div class="container mt-4">
         <!-- Header -->
         <div class="row mb-4">
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <h1>Gerenciar Clientes</h1>
                 <p class="text-muted">Cadastre, edite e gerencie os clientes do sistema</p>
             </div>
-            <div class="col-md-4 text-end">
+            <div class="col-md-6 text-end">
+                <a href="../dashboard.php" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
                 <a href="form.php" class="btn btn-success">
                     <i class="bi bi-person-plus"></i> Novo Cliente
                 </a>
