@@ -434,4 +434,108 @@ class ContratacaoDAO
             throw $e;
         }
     }
+
+    /**
+     * Get monthly revenue for current month
+     */
+    public function getMonthlyRevenue(): float
+    {
+        try {
+            $sql = "SELECT COALESCE(SUM(valor_total), 0) as receita_mensal 
+                    FROM contratacoes 
+                    WHERE status = 'confirmada' 
+                    AND MONTH(criado_em) = MONTH(CURRENT_DATE()) 
+                    AND YEAR(criado_em) = YEAR(CURRENT_DATE())";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            
+            return (float) $stmt->fetchColumn();
+        } catch (Exception $e) {
+            error_log("Error getting monthly revenue: " . $e->getMessage());
+            return 0.0;
+        }
+    }
+
+    /**
+     * Get yearly revenue for current year
+     */
+    public function getYearlyRevenue(): float
+    {
+        try {
+            $sql = "SELECT COALESCE(SUM(valor_total), 0) as receita_anual 
+                    FROM contratacoes 
+                    WHERE status = 'confirmada' 
+                    AND YEAR(criado_em) = YEAR(CURRENT_DATE())";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            
+            return (float) $stmt->fetchColumn();
+        } catch (Exception $e) {
+            error_log("Error getting yearly revenue: " . $e->getMessage());
+            return 0.0;
+        }
+    }
+
+    /**
+     * Get contracts by month for current year
+     */
+    public function getContractsByMonth(): array
+    {
+        try {
+            $sql = "SELECT 
+                        MONTH(criado_em) as mes,
+                        COUNT(*) as total_contratos,
+                        COALESCE(SUM(valor_total), 0) as receita_mensal
+                    FROM contratacoes 
+                    WHERE status = 'confirmada' 
+                    AND YEAR(criado_em) = YEAR(CURRENT_DATE())
+                    GROUP BY MONTH(criado_em)
+                    ORDER BY mes";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error getting contracts by month: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get detailed financial report
+     */
+    public function getFinancialReport($startDate = null, $endDate = null): array
+    {
+        try {
+            $whereClause = "WHERE status = 'confirmada'";
+            $params = [];
+            
+            if ($startDate && $endDate) {
+                $whereClause .= " AND criado_em BETWEEN ? AND ?";
+                $params = [$startDate, $endDate];
+            }
+            
+            $sql = "SELECT 
+                        DATE(criado_em) as data,
+                        COUNT(*) as total_contratos,
+                        COALESCE(SUM(valor_total), 0) as receita_diaria,
+                        COALESCE(AVG(valor_total), 0) as ticket_medio
+                    FROM contratacoes 
+                    $whereClause
+                    GROUP BY DATE(criado_em)
+                    ORDER BY data DESC
+                    LIMIT 30";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error getting financial report: " . $e->getMessage());
+            return [];
+        }
+    }
 }

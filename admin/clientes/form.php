@@ -173,6 +173,11 @@ function isValidCPF($cpf)
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            Relatórios Financeiros
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="../usuarios/list.php">
                             <i class="bi bi-person-gear"></i> Usuários
                         </a>
@@ -347,6 +352,8 @@ function isValidCPF($cpf)
                     $(this).removeClass('is-invalid');
                 }
             });
+
+
         });
     </script>
 </body>

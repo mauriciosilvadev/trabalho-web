@@ -91,8 +91,13 @@ $csrfToken = Auth::generateCSRFToken();
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="buscar.php">
-                            <i class="bi bi-search"></i> Buscar/Contratar
+                        <a class="nav-link" href="listar.php">
+                            <i class="bi bi-file-earmark-text"></i> Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            Relatórios Financeiros
                         </a>
                     </li>
                     <li class="nav-item">
@@ -141,9 +146,6 @@ $csrfToken = Auth::generateCSRFToken();
                 <p class="text-muted">Confirme os detalhes antes de finalizar a contratação</p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="buscar.php" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Voltar
-                </a>
             </div>
         </div>
 

@@ -53,8 +53,13 @@ $cart = $_SESSION['cart'];
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="buscar.php">
-                            <i class="bi bi-search"></i> Buscar/Contratar
+                        <a class="nav-link" href="listar.php">
+                            <i class="bi bi-file-earmark-text"></i> Contratos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../relatorios/financeiro.php">
+                            Relatórios Financeiros
                         </a>
                     </li>
                     <li class="nav-item">
