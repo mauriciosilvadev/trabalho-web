@@ -70,6 +70,14 @@ $contratos = $contratacaoDAO->buscarPorCliente($clienteId);
                 </ul>
 
                 <ul class="navbar-nav">
+                    <!-- Carrinho -->
+                    <li class="nav-item">
+                        <a class="nav-link cart-button" href="carrinho.php">
+                            <i class="bi bi-cart"></i> Carrinho
+                            <span class="badge bg-light text-dark cart-badge">0</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['client_name']) ?>
@@ -227,7 +235,15 @@ $contratos = $contratacaoDAO->buscarPorCliente($clienteId);
                 }
             });
         }
+
+        // Inicializar cart display ao carregar página
+        $(document).ready(function() {
+            // Always show cart in public area when logged in
+            $('.cart-button').show();
+            updateCartDisplay();
+        });
     </script>
+    <script src="../admin/contratacao/carrinho.js"></script>
 </body>
 
 </html>

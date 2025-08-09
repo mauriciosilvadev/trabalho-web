@@ -27,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validation
     if (empty($nome)) {
         $errors[] = 'Nome é obrigatório.';
+    } elseif (!preg_match('/^[a-zA-ZÀ-ÿ\s]{2,100}$/', $nome)) {
+        $errors[] = 'Nome deve conter apenas letras e espaços, entre 2 e 100 caracteres.';
     }
 
     if (empty($cpf)) {
@@ -39,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($cidade)) {
         $errors[] = 'Cidade é obrigatória.';
+    } elseif (!preg_match('/^[a-zA-ZÀ-ÿ\s]{2,50}$/', $cidade)) {
+        $errors[] = 'Cidade deve conter apenas letras e espaços, entre 2 e 50 caracteres.';
     }
 
     if (empty($email)) {
@@ -49,12 +53,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Email já cadastrado.';
     }
 
-    if (!empty($senha)) {
-        if (strlen($senha) < 6) {
-            $errors[] = 'Senha deve ter pelo menos 6 caracteres.';
-        } elseif ($senha !== $confirmarSenha) {
-            $errors[] = 'Confirmação de senha não confere.';
-        }
+
+    if (empty($senha)) {
+        $errors[] = 'Senha é obrigatória.';
+    } elseif (strlen($senha) < 6) {
+        $errors[] = 'Senha deve ter pelo menos 6 caracteres.';
+    } elseif (empty($confirmarSenha)) {
+        $errors[] = 'Confirmação de senha é obrigatória.';
+    } elseif ($senha !== $confirmarSenha) {
+        $errors[] = 'Confirmação de senha não confere.';
+    }
+
+    if (empty($telefone)) {
+        $errors[] = 'Telefone é obrigatório.';
+    } elseif (!preg_match('/^\(\d{2}\) \d{5}-\d{4}$/', $telefone)) {
+        $errors[] = 'Telefone deve estar no formato (XX) XXXXX-XXXX.';
     }
 
     if (empty($errors)) {
@@ -135,9 +148,6 @@ function isValidCPF($cpf)
                 </a>
                 <a class="nav-link" href="login.php">
                     <i class="bi bi-box-arrow-in-right"></i> Login
-                </a>
-                <a class="nav-link" href="../admin/">
-                    <i class="bi bi-gear"></i> Admin
                 </a>
             </div>
         </div>

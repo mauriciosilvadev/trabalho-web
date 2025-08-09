@@ -154,7 +154,7 @@ if (isset($_GET['message'])) {
                                     <th>Nome</th>
                                     <th>Tipo</th>
                                     <th>Preço</th>
-                                    <th>Datas Disponíveis</th>
+                                    <th>Datas</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -174,15 +174,24 @@ if (isset($_GET['message'])) {
                                             <span class="service-price">R$ <?= number_format($servico['preco'], 2, ',', '.') ?></span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-success"><?= $servico['datas_disponiveis'] ?? 0 ?></span> disponíveis
+                                            <?php 
+                                            $datasDisponiveis = $dataDAO->findAvailableByServiceId($servico['id']);
+                                            $disponiveisCount = count($datasDisponiveis);
+                                            $usadasCount = 7 - $disponiveisCount;
+                                            ?>
+                                            <span class="badge bg-success"><?= $disponiveisCount ?></span> disponíveis
                                             <br>
-                                            <small class="text-muted"><?= $servico['total_datas'] ?? 0 ?> total</small>
+                                            <small class="text-muted"><?= $usadasCount ?>/7 cadastradas</small>
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <a href="form.php?id=<?= $servico['id'] ?>" class="btn btn-sm btn-outline-primary"
                                                     data-bs-toggle="tooltip" title="Editar">
                                                     <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="datas.php?id=<?= $servico['id'] ?>" class="btn btn-sm btn-outline-info"
+                                                    data-bs-toggle="tooltip" title="Gerenciar Datas">
+                                                    <i class="bi bi-calendar-check"></i>
                                                 </a>
                                                 <button type="button" class="btn btn-sm btn-outline-danger"
                                                     onclick="deleteService(<?= $servico['id'] ?>, '<?= htmlspecialchars($servico['nome']) ?>')"

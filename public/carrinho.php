@@ -38,14 +38,16 @@ session_start();
                             <i class="bi bi-search"></i> Buscar Serviços
                         </a>
                     </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <!-- Carrinho sempre visível no canto direito -->
                     <li class="nav-item">
                         <a class="nav-link active" href="carrinho.php">
                             <i class="bi bi-cart"></i> Carrinho
                         </a>
                     </li>
-                </ul>
 
-                <ul class="navbar-nav">
                     <?php if (isset($_SESSION['client_id'])): ?>
                         <!-- Cliente logado -->
                         <li class="nav-item">

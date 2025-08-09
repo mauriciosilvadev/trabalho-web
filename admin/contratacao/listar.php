@@ -118,9 +118,7 @@ $totalReceita = array_sum(array_column($contratos, 'valor_total'));
                 <p class="text-muted">Visualize e gerencie todos os contratos do sistema</p>
             </div>
         </div>
-
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
+        <div class="row mb-4 justify-content-center">
             <div class="col-md-2">
                 <a href="listar.php" class="text-decoration-none">
                     <div class="card stats-card clickable-card">
@@ -130,48 +128,6 @@ $totalReceita = array_sum(array_column($contratos, 'valor_total'));
                             <div class="stats-label">Total</div>
                             <div class="card-hint">
                                 <small><i class="bi bi-arrow-right"></i> Ver todos os contratos</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-2">
-                <a href="listar.php?status=ativo" class="text-decoration-none">
-                    <div class="card stats-card clickable-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-check-circle text-success" style="font-size: 1.5rem;"></i>
-                            <div class="stats-number"><?= $estatisticas['ativo'] ?></div>
-                            <div class="stats-label">Ativos</div>
-                            <div class="card-hint">
-                                <small><i class="bi bi-arrow-right"></i> Ver contratos ativos</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-2">
-                <a href="listar.php?status=pendente" class="text-decoration-none">
-                    <div class="card stats-card clickable-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-clock text-warning" style="font-size: 1.5rem;"></i>
-                            <div class="stats-number"><?= $estatisticas['pendente'] ?></div>
-                            <div class="stats-label">Pendentes</div>
-                            <div class="card-hint">
-                                <small><i class="bi bi-arrow-right"></i> Ver contratos pendentes</small>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-2">
-                <a href="listar.php?status=concluido" class="text-decoration-none">
-                    <div class="card stats-card clickable-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-check-square text-info" style="font-size: 1.5rem;"></i>
-                            <div class="stats-number"><?= $estatisticas['concluido'] ?></div>
-                            <div class="stats-label">Concluídos</div>
-                            <div class="card-hint">
-                                <small><i class="bi bi-arrow-right"></i> Ver contratos concluídos</small>
                             </div>
                         </div>
                     </div>

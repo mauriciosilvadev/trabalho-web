@@ -71,9 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a class="nav-link" href="cadastro.php">
                     <i class="bi bi-person-plus"></i> Cadastrar
                 </a>
-                <a class="nav-link" href="../admin/">
-                    <i class="bi bi-gear"></i> Admin
-                </a>
             </div>
         </div>
     </nav>
