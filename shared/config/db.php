@@ -13,13 +13,14 @@ class Database
     private $username = 'root';
     private $password = '';
     private $charset = 'utf8mb4';
+    private $socket = '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock';
 
     /**
      * Private constructor to prevent direct instantiation
      */
     private function __construct()
     {
-        $dsn = "mysql:host={$this->host};dbname={$this->database};charset={$this->charset}";
+        $dsn = "mysql:host={$this->host};dbname={$this->database};charset={$this->charset};unix_socket={$this->socket}";
 
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

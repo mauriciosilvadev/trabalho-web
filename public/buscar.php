@@ -12,6 +12,20 @@ require_once '../shared/dao/ServicoDAO.php';
 try {
     $servicoDAO = new ServicoDAO();
 
+    // Verificar se é uma requisição AJAX para buscar dados de um serviço específico
+    if (isset($_GET['ajax']) && isset($_GET['id'])) {
+        $servico = $servicoDAO->findById($_GET['id']);
+        if ($servico) {
+            header('Content-Type: application/json');
+            echo json_encode($servico);
+            exit;
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(null);
+            exit;
+        }
+    }
+
     // Filtros de busca adaptados para os métodos existentes
     $filtros = [
         'nome' => $_GET['nome'] ?? '',
@@ -70,9 +84,9 @@ try {
                 </ul>
 
                 <ul class="navbar-nav">
-                    <!-- Carrinho -->
+                    <!-- Carrinho sempre visível no canto direito -->
                     <li class="nav-item">
-                        <a class="nav-link cart-button" href="carrinho.php" style="display: none;">
+                        <a class="nav-link cart-button" href="carrinho.php">
                             <i class="bi bi-cart"></i> Carrinho
                             <span class="badge bg-light text-dark cart-badge">0</span>
                         </a>
@@ -108,13 +122,6 @@ try {
                             </a>
                         </li>
                     <?php endif; ?>
-
-                    <!-- Link Admin -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="../admin/">
-                            <i class="bi bi-gear"></i> Admin
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -285,6 +292,10 @@ try {
 
         // Inicializar cart display ao carregar página
         $(document).ready(function() {
+            // Show cart if user is logged in
+            <?php if (isset($_SESSION['client_id'])): ?>
+                $('.cart-button').show();
+            <?php endif; ?>
             updateCartDisplay();
         });
     </script>

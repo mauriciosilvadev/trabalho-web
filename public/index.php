@@ -55,6 +55,10 @@ $tipos = $servicoDAO->getTypes();
                             <i class="bi bi-search"></i> Buscar Serviços
                         </a>
                     </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <!-- Carrinho sempre visível no canto direito -->
                     <li class="nav-item">
                         <a class="nav-link position-relative" href="carrinho.php">
                             <i class="bi bi-cart"></i> Carrinho
@@ -63,9 +67,7 @@ $tipos = $servicoDAO->getTypes();
                             </span>
                         </a>
                     </li>
-                </ul>
 
-                <ul class="navbar-nav">
                     <?php if (isset($_SESSION['client_id'])): ?>
                         <!-- Cliente logado -->
                         <li class="nav-item">
@@ -96,11 +98,6 @@ $tipos = $servicoDAO->getTypes();
                             </a>
                         </li>
                     <?php endif; ?>
-                    <li class="nav-item">
-                        <a class="nav-link text-warning" href="../admin/">
-                            <i class="bi bi-gear"></i> Admin
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -268,7 +265,6 @@ $tipos = $servicoDAO->getTypes();
                     <div class="d-flex justify-content-end gap-3">
                         <a href="buscar.php" class="text-white-50">Buscar</a>
                         <a href="cadastro.php" class="text-white-50">Cadastrar</a>
-                        <a href="../admin/" class="text-warning">Admin</a>
                     </div>
                 </div>
             </div>
@@ -281,16 +277,16 @@ $tipos = $servicoDAO->getTypes();
     <script>
         // Função para adicionar ao carrinho da página inicial
         function addToCartFromHome(servicoId) {
-            // Buscar dados do serviço e adicionar ao carrinho
+            // Buscar dados do serviço e mostrar modal de seleção de data
             $.get('buscar.php', {
                 ajax: 1,
                 id: servicoId
             }, function(servico) {
                 if (servico) {
-                    addToCart(servico);
-                    showSuccess('Serviço adicionado ao carrinho!');
+                    // Em vez de adicionar diretamente, mostrar modal de seleção de data
+                    showDateSelectionModal(servico.id, servico.nome, servico.tipo, servico.preco);
                 } else {
-                    showError('Erro ao adicionar serviço ao carrinho.');
+                    showError('Erro ao carregar dados do serviço.');
                 }
             }).fail(function() {
                 showError('Erro ao carregar dados do serviço.');
@@ -299,6 +295,10 @@ $tipos = $servicoDAO->getTypes();
 
         // Atualizar contador do carrinho
         $(document).ready(function() {
+            // Show cart if user is logged in
+            <?php if (isset($_SESSION['client_id'])): ?>
+                $('.cart-count').show().parent().show();
+            <?php endif; ?>
             updateCartCount();
         });
 

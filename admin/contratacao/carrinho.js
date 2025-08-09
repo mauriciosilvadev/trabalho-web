@@ -25,6 +25,13 @@ $(document).ready(function() {
     if (window.location.pathname.includes('carrinho.php')) {
         displayCartItems();
     }
+    
+    // Always show cart in public area (regardless of login status)
+    const isPublicArea = window.location.pathname.includes('/public/');
+    
+    if (isPublicArea) {
+        $('.cart-button').show();
+    }
 });
 
 /**
@@ -158,26 +165,11 @@ function handleAddToCart(e) {
         return;
     }
     
-    // Add to cart
-    const newItem = {
-        serviceId: serviceId,
-        serviceName: serviceName,
-        serviceType: serviceType,
-        price: servicePrice,
-        quantity: 1,
-        selectedDate: null,
-        selectedDateId: null,
-        datas: []
-    };
-    
-    cart.items.push(newItem);
-    saveCart();
-    
     // Update button state
     $(this).prop('disabled', true).text('Selecionando Data...');
     
-    // Show date selection modal (success message will show after date selection)
-    showDateSelectionModal(serviceId, serviceName);
+    // Show date selection modal first - item will be added only after date selection
+    showDateSelectionModal(serviceId, serviceName, serviceType, servicePrice);
 }
 
 /**
@@ -214,33 +206,43 @@ function handleSelectDate(e) {
     const dateId = button.data('date-id');
     const dateValue = button.data('date-value');
     const serviceId = parseInt(button.data('service-id'));
+    const serviceName = button.data('service-name');
+    const serviceType = button.data('service-type');
+    const servicePrice = parseFloat(button.data('service-price'));
     
-    // Update cart item
-    const cartItem = cart.items.find(item => item.serviceId === serviceId);
-    if (cartItem) {
-        cartItem.selectedDate = dateValue;
-        cartItem.selectedDateId = dateId;
-        saveCart();
-        
-        // Update UI
-        button.closest('.modal').modal('hide');
-        
-        // Update button text to show item is in cart
-        $(`.add-to-cart[data-service-id="${serviceId}"]`)
-            .text('Adicionado ao Carrinho');
-        
-        // Show success message now that date is selected
-        showSuccess(`${cartItem.serviceName} adicionado ao carrinho com data selecionada!`);
-        
-        // Update cart display
-        updateCartDisplay();
-    }
+    // Add item to cart only after date selection
+    const newItem = {
+        serviceId: serviceId,
+        serviceName: serviceName,
+        serviceType: serviceType,
+        price: servicePrice,
+        quantity: 1,
+        selectedDate: dateValue,
+        selectedDateId: dateId,
+        datas: []
+    };
+    
+    cart.items.push(newItem);
+    saveCart();
+    
+    // Update UI
+    button.closest('.modal').modal('hide');
+    
+    // Update button text to show item is in cart
+    $(`.add-to-cart[data-service-id="${serviceId}"]`)
+        .text('Adicionado ao Carrinho');
+    
+    // Show success message
+    showSuccess(`${serviceName} adicionado ao carrinho com data selecionada!`);
+    
+    // Update cart display
+    updateCartDisplay();
 }
 
 /**
  * Show date selection modal
  */
-function showDateSelectionModal(serviceId, serviceName) {
+function showDateSelectionModal(serviceId, serviceName, serviceType, servicePrice) {
     // Determinar o caminho correto baseado na URL atual
     const currentPath = window.location.pathname;
     let getDateUrl;
@@ -249,9 +251,11 @@ function showDateSelectionModal(serviceId, serviceName) {
         // Estamos na área admin
         getDateUrl = 'get_dates.php';
     } else {
-        // Estamos na área pública
-        getDateUrl = 'api/get_dates.php';
+        // Estamos na área pública - usar caminho absoluto
+        getDateUrl = '/trabalho-web/public/api/get_dates.php';
     }
+    
+    console.log('Carregando datas de:', getDateUrl);
     
     // Load available dates via AJAX
     $.ajax({
@@ -260,10 +264,18 @@ function showDateSelectionModal(serviceId, serviceName) {
         data: { service_id: serviceId },
         dataType: 'json',
         success: function(dates) {
-            displayDateModal(serviceId, serviceName, dates);
+            console.log('Datas carregadas com sucesso:', dates);
+            displayDateModal(serviceId, serviceName, serviceType, servicePrice, dates);
         },
-        error: function() {
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar datas:', error);
+            console.error('Status:', status);
+            console.error('Response:', xhr.responseText);
             showError('Erro ao carregar datas disponíveis');
+            // Re-enable button on error
+            $(`.add-to-cart[data-service-id="${serviceId}"]`)
+                .prop('disabled', false)
+                .text('Adicionar ao Carrinho');
         }
     });
 }
@@ -271,7 +283,7 @@ function showDateSelectionModal(serviceId, serviceName) {
 /**
  * Display date selection modal
  */
-function displayDateModal(serviceId, serviceName, dates) {
+function displayDateModal(serviceId, serviceName, serviceType, servicePrice, dates) {
     let modalHtml = `
         <div class="modal fade" id="dateModal" tabindex="-1">
             <div class="modal-dialog">
@@ -291,6 +303,9 @@ function displayDateModal(serviceId, serviceName, dates) {
                 <div class="date-option mb-2">
                     <button type="button" class="btn btn-outline-primary w-100 select-date" 
                             data-service-id="${serviceId}" 
+                            data-service-name="${escapeHtml(serviceName)}"
+                            data-service-type="${escapeHtml(serviceType)}"
+                            data-service-price="${servicePrice}"
                             data-date-id="${date.id}" 
                             data-date-value="${date.data}">
                         ${formatDate(date.data)}
@@ -330,20 +345,10 @@ function displayDateModal(serviceId, serviceName, dates) {
     
     // Handle modal close without date selection
     $('#dateModal').on('hidden.bs.modal', function() {
-        const cartItem = cart.items.find(item => item.serviceId === serviceId);
-        if (cartItem && !cartItem.selectedDate) {
-            // Remove item from cart if no date was selected
-            cart.items = cart.items.filter(item => item.serviceId !== serviceId);
-            saveCart();
-            
-            // Re-enable add to cart button
-            $(`.add-to-cart[data-service-id="${serviceId}"]`)
-                .prop('disabled', false)
-                .text('Adicionar ao Carrinho');
-            
-            updateCartDisplay();
-            showError('Serviço removido do carrinho - data não selecionada');
-        }
+        // Re-enable add to cart button if no date was selected
+        $(`.add-to-cart[data-service-id="${serviceId}"]`)
+            .prop('disabled', false)
+            .text('Adicionar ao Carrinho');
     });
 }
 
@@ -361,18 +366,29 @@ function updateCartDisplay() {
     $('.cart-total').text(formatCurrency(cartTotal));
     $('#cart-total').text(formatCurrency(cartTotal));
     
-    // Show/hide cart button
-    if (cartCount > 0) {
+    // Show cart button based on area
+    const isPublicArea = window.location.pathname.includes('/public/');
+    
+    if (isPublicArea) {
+        // Always show cart in public area (regardless of login status)
+        $('.cart-button').show();
+    } else if (cartCount > 0) {
+        // In admin area, show only if has items
         $('.cart-button').show();
     } else {
+        // Hide cart in admin area if no items
         $('.cart-button').hide();
     }
     
-    // Update buttons on search page
+    // Update buttons on search page - only mark as "In Cart" if item has selected date
     cart.items.forEach(item => {
-        $(`.add-to-cart[data-service-id="${item.serviceId}"]`)
-            .prop('disabled', true)
-            .text('No Carrinho');
+        const button = $(`.add-to-cart[data-service-id="${item.serviceId}"]`);
+        if (item.selectedDate) {
+            button.prop('disabled', true).text('No Carrinho');
+        } else {
+            // If item is in cart but has no date, keep button enabled for date selection
+            button.prop('disabled', false).text('Selecionar Data');
+        }
     });
 }
 
